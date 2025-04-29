@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 body{
-  background-color: #e6e6ff;
+  background-color: #F8FAFC;
   width: 100vw;
   overflow-x: hidden;
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Montserrat';
 }
