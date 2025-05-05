@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -10,7 +10,7 @@ export function useAuth(){
 
 export function AuthProvider({ children }){
     const [currentUser, setCurrentUser ] = useState(null);
-    const [userLoggedin, setUserLoggedin ] = useState(false);
+    const [userLoggedIn, setUserLoggedIn ] = useState(false);
     const [loading, setLoading ] = useState(true);
 
     useEffect(()=>{
@@ -22,17 +22,19 @@ export function AuthProvider({ children }){
         //First check if the user is the valid value.
         if (users) {
             setCurrentUser({...users});
-            setUserLoggedin(true);
+            setUserLoggedIn(true);
         } else {
             setCurrentUser(null);
-            setUserLoggedin(false);
+            setUserLoggedIn(false);
         }
+        setLoading(false); // ✅ ต้องใส่ตรงนี้ ไม่งั้น context จะไม่เคย render
+
     }
 
     //Expose the curent user and if the user is logged in or not
     const value = {
         currentUser,
-        userLoggedin,
+        userLoggedIn,
         loading 
     }
 
