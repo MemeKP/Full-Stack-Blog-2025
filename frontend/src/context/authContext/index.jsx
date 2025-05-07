@@ -27,7 +27,7 @@ export function AuthProvider({ children }){
             setCurrentUser(null);
             setUserLoggedIn(false);
         }
-        setLoading(false); // ✅ ต้องใส่ตรงนี้ ไม่งั้น context จะไม่เคย render
+        setLoading(false); //ต้องใส่ตรงนี้ ไม่งั้น context จะไม่เคย render
 
     }
 

@@ -3,23 +3,24 @@ import { CiSearch } from "react-icons/ci";
 import { useState } from 'react';
 
 const SearchBar = () => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [query, setQuary] = useState("");
-  return (
+    const [isOpen, setIsOpen] = useState(false);
+    const [query, setQuery] = useState('');
+
+    return (
     <form>
-      <div className={`flex items-center border rounded-full transition-all p-2 inline-flex duration-200 overflow-hidden ${isHovered ? "w-64 transition-all ease-in-out duration-300" : "w-10 bg-gray-100 justify-center"} shadow-sm hover:bg-gray-100`}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => {
-            if(!query) setIsHovered(false)}}
+      <div 
+        className={`hover:bg-gray-200 flex items-center border rounded-full transition-all p-2 inline-flex overflow-hidden ${isOpen ? "w-64 transition-all ease-in-out duration-300" : "w-10 bg-gray-100 justify-center"} shadow-sm`}
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         <CiSearch className="text-gray-500 text-xl" />
-        {isHovered && (
+        {isOpen && (
         <input 
           type="search"
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Search..."
           className="ml-1 outline-none w-full bg-transparent"
+          autoFocus
           />
         )}
       </div>

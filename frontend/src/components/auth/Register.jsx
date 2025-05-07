@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom'
-import { doCreateUserWithEmailAndPassword } from '../../../firebase/auth'
 import { useAuth } from '../../context/authContext'
+import { doCreateUserWithEmailPassword } from '../../firebase/auth'
 const Register = () => {
 
     const navigate = useNavigate()
@@ -18,7 +18,7 @@ const Register = () => {
         e.preventDefault()
         if(!isRegistering) {
             setIsRegistering(true)
-            await doCreateUserWithEmailAndPassword(email, password)
+            await doCreateUserWithEmailPassword(email, password)
         }
     }
 
