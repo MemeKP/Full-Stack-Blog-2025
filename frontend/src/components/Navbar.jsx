@@ -29,7 +29,7 @@ const Navbar = () => {
                 {open ? "X" : "☰"}
             </div>
             {/* MOBILE LINK LIST */}
-            <div className={`w-full h-screen flex flex-col items-center justify-center absolute gap-8 font-medium text-lg top-16 transition-all ease-in-out ${open ? "-right-0" : "-right-[100%]"}`}>
+            <div className={`w-full h-screen flex flex-col items-center justify-center absolute gap-8 font-medium text-lg top-16 transition-all ease-in-out ${open ? "-right-0 bg-slate-200" : "-right-[100%]"}`}>
             <Link to="/">Home</Link>
             <Link to="/">Write</Link>
             <Link to="/">About</Link>

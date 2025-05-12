@@ -18,7 +18,7 @@ const Homepage = () => {
       {/* 2. INTRODUCTION */}
       <section className='py-14'>
         <div className="container mx-auto px-4 text-center">
-          <h1 className='text-9xl font-semibold bg-gradient-to-r from-pink-600 to-cyan-500 bg-clip-text text-transparent'>Post Write</h1>
+          <h1 className='text-9xl font-semibold bg-gradient-to-r from-pink-600 to-cyan-600 bg-clip-text text-transparent'>Post Write</h1>
           <p className='text-3xl'>A place to share your thoughts.</p>
         </div>
       </section>
@@ -26,7 +26,7 @@ const Homepage = () => {
       {/* 3. Filter Tabs */}
       {/* 3.1) Latest blog and Trending */}
       <div className="w-full">
-        <InPageNavigation />
+        <InPageNavigation routes={["home", "trending"]}></InPageNavigation>
       </div>
       {/* FEATURE POST */}
       {/* POST LIST */}
