@@ -26,7 +26,7 @@ const Homepage = () => {
       {/* 3. Filter Tabs */}
       {/* 3.1) Latest blog and Trending */}
       <div className="w-full">
-        <InPageNavigation routes={["home", "trending"]}></InPageNavigation>
+        <InPageNavigation routes={["home", "trending"]} defaultHidden={["trending"]}></InPageNavigation>
       </div>
       {/* FEATURE POST */}
       {/* POST LIST */}
