@@ -2,9 +2,11 @@ import React from 'react'
 import AnimationWrapper from '../common/page-animation'
 import { Link } from 'react-router-dom'
 import InPageNavigation from '../components/InPageNavigation'
+import PostList from '../components/PostList'
 
 const Homepage = () => {
   return (
+    
     <AnimationWrapper keyValue="homepage">
       <div className="mt-4 flex flex-col gap-4">
         {/* 1. BREADCRUMB */}
@@ -25,16 +27,23 @@ const Homepage = () => {
 
       {/* 3. Filter Tabs */}
       {/* 3.1) Latest blog and Trending */}
-      <div className="w-full">
-        <InPageNavigation routes={["home", "trending"]} defaultHidden={["trending"]}></InPageNavigation>
+      {/* "Content alignment with max-width container and auto margin" => max-w-6xl mx-auto px-4 */}   
+        <div className="w-full">
+        <InPageNavigation routes={["All Post", "Trending"]} defaultHidden={["trending"]}>
+          <h1>Lastest Blogs Here</h1>
+          <h1>Trending Blogs Here</h1>
+        </InPageNavigation>
       </div>
-      {/* FEATURE POST */}
       {/* POST LIST */}
+      <div className=''>
+        <PostList />
+      </div>
+
+      
       {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
 
-
     </AnimationWrapper>
-
+    
   )
 }
 

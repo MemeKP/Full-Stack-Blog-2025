@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { IKImage } from 'imagekitio-react';
+import IKImageWrapper from './IKImageWrapper'
 import SearchBar from './SearchBar';
 import { Link } from 'react-router-dom';
 import AnimationWrapper from '../common/page-animation';
@@ -16,8 +17,8 @@ const Navbar = () => {
     <div className='w-full h-16 md:h-20 flex items-center justify-between'>
         {/* LOGO */}
         <Link to="/" className='flex items-center gap-4 text-xl font-bold'>
-            {/* <Image path='logo.png 'alt="PW Logo" w={32} h={32} /> */}
-            <IKImage urlEndpoint={urlEndpoint} path='\logo.png' className='w-12 h-12' alt='PW Logo'/>
+            {/* <IKImage urlEndpoint={urlEndpoint} path='\logo.png' className='w-12 h-12' alt='PW Logo'/> */}
+            <IKImageWrapper src='logo.png' className='w-12 h-12' alt='PW Logo'/>
             <span>PW Blog</span>
         </Link>
 
