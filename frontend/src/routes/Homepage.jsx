@@ -1,8 +1,9 @@
-import React from 'react'
 import AnimationWrapper from '../common/page-animation'
 import { Link } from 'react-router-dom'
 import InPageNavigation from '../components/InPageNavigation'
 import PostList from '../components/PostList'
+import MainLayout from '../components/MainLayout'
+import SideBar from '../components/SideBar'
 
 const Homepage = () => {
   return (
@@ -25,22 +26,23 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* 3. Filter Tabs */}
+      {/* 3. MAIN CONTENT + SIDEBAR */}
       {/* 3.1) Latest blog and Trending */}
       {/* "Content alignment with max-width container and auto margin" => max-w-6xl mx-auto px-4 */}   
+      <MainLayout sidebar={<SideBar />}>
         <div className="w-full">
-        <InPageNavigation routes={["All Post", "Trending"]} defaultHidden={["trending"]}>
+        <InPageNavigation routes={["All Post", "Trending"]} defaultHidden={["Trending"]}>
           <h1>Lastest Blogs Here</h1>
           <h1>Trending Blogs Here</h1>
         </InPageNavigation>
       </div>
-      {/* POST LIST */}
-      <div className=''>
-        <PostList />
-      </div>
 
+      {/* POST LIST */}
+        <PostList />
       
       {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
+      </MainLayout>
+        
 
     </AnimationWrapper>
     
