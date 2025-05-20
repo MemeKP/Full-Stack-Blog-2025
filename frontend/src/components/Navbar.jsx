@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState } from 'react';
-import { IKImage } from 'imagekitio-react';
 import IKImageWrapper from './IKImageWrapper'
 import SearchBar from './SearchBar';
 import { Link } from 'react-router-dom';
@@ -41,15 +40,15 @@ const Navbar = () => {
         </div>
         {/* DESKTOP MENU */}
         <div className='hidden md:flex items-center gap-8 xl:gap-12 font-medium'>
-            <Link to="/" className='hover:text-cyan-500'>Home</Link>
-            <Link to="/" className='hover:text-cyan-500'>Write</Link>
-            <Link to="/"className='hover:text-cyan-500'>About</Link>
+            <Link to="/" className='hover:text-cyan-500 duration-200'>Home</Link>
+            <Link to="/" className='hover:text-cyan-500 duration-200'>Write</Link>
+            <Link to="/"className='hover:text-cyan-500 duration-200'>About</Link>
 
             {/* SEARCH BAR */}
             <SearchBar />
 
             <Link to='/login'>
-                <button className='py-2 px-4 rounded-3xl bg-cyan-500 text-white hover:bg-cyan-600'>Login</button>
+                <button className='py-2 px-4 rounded-3xl bg-cyan-500 text-white hover:bg-cyan-600 duration-200'>Login</button>
             </Link>
             
         </div>

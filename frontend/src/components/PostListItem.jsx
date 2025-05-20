@@ -9,7 +9,7 @@ const PostListItem = () => {
         <IKImageWrapper 
         src='post2.jpg' 
         className="rounded-2xl object-cover w-full h-48 "
-        // w='800' fix width when user upload the image
+        w='735' //fix width when user upload the image
         alt='post image'
         />
       </div>
@@ -24,7 +24,7 @@ const PostListItem = () => {
         </Link>
         <div>
           <span>Written By </span>
-          <Link className="text-cyan-600 hover:underline">Kaeyama Tobio</Link>
+          <Link className="text-cyan-600 hover:underline">Kageyama Tobio</Link>
           <span> on </span>
           <Link className="text-cyan-600 hover:underline">Web Design </Link>
           <span>2 days ago</span>

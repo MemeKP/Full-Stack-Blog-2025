@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { GoArrowRight } from "react-icons/go";
 
 const SideBar = () => {
 
@@ -27,10 +28,12 @@ const SideBar = () => {
         {/* TRENDING */}
         <div className="flex flex-col mt-10 gap-5 bg-gray-100 p-3 rounded-lg">
             <h1 className="font-bold text-lg mb-2">Trending</h1>
+
             <div className="flex flex-col divide-y divide-gray-400">
                 {trending_mock_post.map((post, i) => (
-                <div key={i} className="flex gap-4 py-4">
-                    <div className="text-4xl font-bold w-20">
+                <div key={i} className="flex justify-between items-center py-4">
+                    <div className="flex gap-3">
+                        <div className="text-4xl font-bold w-20">
                         {String(i + 1).padStart(2 , '0')}
                     </div>
                     <div className="flex flex-col">
@@ -41,11 +44,17 @@ const SideBar = () => {
                             <Link to={'/test'} className="cursor-pointer"> {post.author}</Link>
                         </span>
                     </div>
+                    </div>
+                    
+                    <GoArrowRight className="text-xl"/>
+
                 </div>
                 ))}
             </div>
-           
+     
         </div>
+        
+
     </div>
   )
 }
