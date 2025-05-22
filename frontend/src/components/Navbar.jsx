@@ -31,7 +31,7 @@ const Navbar = () => {
             {/* MOBILE LINK LIST */}
             <div className={`w-full h-screen flex flex-col items-center justify-center absolute gap-8 font-medium text-lg top-16 transition-all ease-in-out ${open ? "-right-0 bg-slate-200" : "-right-[100%]"}`}>
             <Link to="/">Home</Link>
-            <Link to="/">Write</Link>
+            <Link to="/write">Write</Link>
             <Link to="/">About</Link>
             <Link to="/">
                 <button className='py-2 px-4 rounded-3xl bg-cyan-500 text-white'>Login</button>
@@ -41,7 +41,7 @@ const Navbar = () => {
         {/* DESKTOP MENU */}
         <div className='hidden md:flex items-center gap-8 xl:gap-12 font-medium'>
             <Link to="/" className='hover:text-cyan-500 duration-200'>Home</Link>
-            <Link to="/" className='hover:text-cyan-500 duration-200'>Write</Link>
+            <Link to="/write" className='hover:text-cyan-500 duration-200'>Write</Link>
             <Link to="/"className='hover:text-cyan-500 duration-200'>About</Link>
 
             {/* SEARCH BAR */}

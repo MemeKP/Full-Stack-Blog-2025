@@ -16,6 +16,7 @@ import {
 import SinglePostPage from './routes/SinglePostPage.jsx'
 import MainLayout from './layouts/MainLayout.jsx'
 import { AuthProvider } from './context/authContext/index.jsx'
+import ProfilePage from './routes/ProfilePage.jsx'
 
 
 const router = createBrowserRouter([
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "/write",
         element: <Write />,
+      },
+      {
+        path: "/profile/:userId",
+        element: <ProfilePage />,
       },
     ]
   }
