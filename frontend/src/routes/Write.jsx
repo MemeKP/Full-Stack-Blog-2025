@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import Tiptap from '../components/Tiptap'
+import Tiptap from '../components/Editor/Tiptap'
 
 const Write = () => {
   const [title, setTitle] = useState('')
@@ -16,15 +16,15 @@ const Write = () => {
       <input
         type="text"
         value={title}
-        placeholder='TITLE'
+        placeholder='Title'
         onChange={e => setTitle(e.target.value)}
-        className="w-full text-3xl text-center font-bold focus:outline-none placeholder-gray-300"
+        className="w-full text-7xl font-semibold font-serif focus:outline-none placeholder-gray-300 bg-transparent"
       />
 
-      <Tiptap onChange={setContent} />
+      <Tiptap onChange={setContent}/>
 
       <div className="flex justify-end">
-        <button onClick={handlePublish} className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+        <button onClick={handlePublish} className="bg-cyan-500 text-white px-6 py-2 rounded-md hover:bg-cyan-600 duration-100">
           Publish
         </button>
       </div>

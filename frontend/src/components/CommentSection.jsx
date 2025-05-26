@@ -13,7 +13,7 @@ const CommentSection = () => {
             },
             date: "May 7",
             content: "I agreed with you.",
-            likes: 25,
+            likes: 28,
             replies: []
         },
         {
@@ -25,7 +25,7 @@ const CommentSection = () => {
             },
             date: "May 7",
             content: "If shoyo say so.",
-            likes: 25,
+            likes: 30,
             replies: []
         },
         {
@@ -37,7 +37,7 @@ const CommentSection = () => {
             },
             date: "May 8",
             content: "WOW!!",
-            likes: 25,
+            likes: 26,
             replies: []
         },
     ])
