@@ -21,7 +21,7 @@ const Write = () => {
         className="w-full text-7xl font-semibold font-serif focus:outline-none placeholder-gray-300 bg-transparent"
       />
 
-      <Tiptap onChange={setContent}/>
+      <Tiptap onChange={setContent} className='max-w-screen-lg mx-auto overflow-x-hidden'/>
 
       <div className="flex justify-end">
         <button onClick={handlePublish} className="bg-cyan-500 text-white px-6 py-2 rounded-md hover:bg-cyan-600 duration-100">

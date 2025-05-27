@@ -1,9 +1,9 @@
 import './editor.css'
 
-import { useEditor, EditorContent, BubbleMenu, FloatingMenu, isActive } from '@tiptap/react'
-import { PiLinkBold, PiCodeBold } from "react-icons/pi";
+import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react'
+import { PiLinkBold, PiCodeBold, PiTextAlignCenter, PiTextAlignJustify, PiTextAlignLeft, PiTextAlignRight } from "react-icons/pi";
 import { AiOutlineStrikethrough } from "react-icons/ai";
-
+import React, { Children, useCallback } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import Paragraph from '@tiptap/extension-paragraph'
 import Bold from '@tiptap/extension-bold'
@@ -16,9 +16,10 @@ import TextStyle from '@tiptap/extension-text-style'
 import Link from '@tiptap/extension-link'
 import Strike from '@tiptap/extension-strike'
 import Code from '@tiptap/extension-code'
+import FontFamily from '@tiptap/extension-font-family'
 
-import React, { Children, useCallback } from 'react'
 import DropDownMenu from '../DropDownMenu';
+import {FONT_OPTIONS} from './FontConfig'
 
 // กำหนด Editor
 const Tiptap = ({ onChange }) => {
@@ -33,6 +34,9 @@ const Tiptap = ({ onChange }) => {
             Italic,
             Strike,
             Code,
+            FontFamily.configure({
+                types: ['textStyle']
+            }),
             TextStyle.configure({ mergeNestedSpanStyles: true }),
             Link.configure({
                 openOnClick: false,
@@ -106,9 +110,7 @@ const Tiptap = ({ onChange }) => {
             })
 
         ],
-        content: `
-        
-        `,
+        content: ``,
         editorProps: {
             attributes: {
                 class: 'prose prose-lg focus:outline-none min-h-[400px] py-4',
@@ -140,7 +142,6 @@ const Tiptap = ({ onChange }) => {
         if (url === null) {
             return
         }
-
         // empty
         if (url === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink()
@@ -148,7 +149,6 @@ const Tiptap = ({ onChange }) => {
 
             return
         }
-
         // update link
         try {
             editor.chain().focus().extendMarkRange('link').setLink({ href: url })
@@ -162,11 +162,16 @@ const Tiptap = ({ onChange }) => {
         return null
     }
 
+    const currentFont = editor?.getAttributes('textStyle').FontFamily || ''
+
     return (
         <div className="border-none p-4">
             {editor && (
                 <>
-
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Mitr:wght@200;300;400;500;600;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Shadows+Into+Light&display=swap" rel="stylesheet"
+                    />
+                    
                     {/* Bubble Menu: ปรากฏเมื่อเลือกข้อความ */}
                     <BubbleMenu editor={editor} className="bg-white border shadow rounded flex gap-2 px-2 py-1">
                         <button onClick={() => editor.chain().focus().toggleBold().run()} className="font-bold">B</button>
@@ -189,6 +194,7 @@ const Tiptap = ({ onChange }) => {
                         </button>
                         <button onClick={() => editor.chain().focus().toggleItalic().run()} className="italic">I</button>
                         <button onClick={() => editor.chain().focus().toggleUnderline().run()} className="underline">U</button>
+                        
                     </BubbleMenu>
 
                     {/* Floating Menu: ปรากฏเมื่ออยู่บรรทัดใหม่ */}
@@ -199,27 +205,27 @@ const Tiptap = ({ onChange }) => {
                             duration: 100,
                             offset: [-40, 4],
                         }}
-                        className="flex min-w-0 bg-white border shadow-lg rounded-full px-2 py-1  space-x-3"
+                        className="flex flex-nowrap w-max whitespace-nowrap bg-white border shadow-lg rounded-full px-2 py-1"
                     >
                         <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                            className='w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-200 transition text-sm font-medium'
+                            className='w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-100 transition text-sm font-medium'
                         >
                             H1
                         </button>
                         <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                            className='w-8 h-8 flex items-center justify-center   text-black rounded-full hover:bg-gray-200 transition text-sm font-medium'
+                            className='w-8 h-8 flex items-center justify-center   text-black rounded-full hover:bg-gray-100 transition text-sm font-medium'
                         >
                             H2
                         </button>
                         <button onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                            className='w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-200 transition text-sm font-medium'
+                            className='w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-100 transition text-sm font-medium'
                         >
                             H3
                         </button>
                         <button
                             onClick={() => toggleMark(editor, 'italic')}
                             className={
-                                `w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-200 transition text-sm font-medium
+                                `w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
                                 ${editor.isActive('italic') ? 'bg-gray-200' : ''}`
                             }
                         >
@@ -227,41 +233,71 @@ const Tiptap = ({ onChange }) => {
                         </button>
                         <button
                             onClick={() => toggleMark(editor, 'bold')}
-                            className={`w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-200 transition text-sm font-medium
+                            className={`w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
                                 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
                         >
                             B
                         </button>
                         <button
                             onClick={() => toggleMark(editor, 'underline')}
-                            className={`w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-200 transition text-sm font-medium
+                            className={`w-8 h-8 flex items-center justify-center underline text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
                                 ${editor.isActive('underline') ? 'bg-gray-200' : ''}`}
                         >
-                            U̲
+                            U
                         </button>
                         <button
                             onClick={() => toggleMark(editor, 'strike')}
-                            className={`w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-200 transition text-sm font-medium
+                            className={`w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
                                 ${editor.isActive('strike') ? 'bg-gray-200' : ''}`}
                         >
                             <AiOutlineStrikethrough className='h-4 w-4' />
                         </button>
                         <button
                             onClick={setLink}
-                            className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-200 transition text-sm font-medium
+                            className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
                                 ${editor.isActive('link') ? 'is-active' : ''}`}>
                             <PiLinkBold className='w-4 h-4' />
                         </button>
                         <button
                             onClick={() => toggleMark(editor, 'code')}
-                            className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-200 transition text-sm font-medium
+                            className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
                                 ${editor.isActive('link') ? 'is-active' : ''}`}
                         >
                             <PiCodeBold className='w-4 h-4' />
                         </button>
-
-                        <div className='shrink-0 min-w-0'>
-                            <DropDownMenu />
+                        {/* Font Dropdown (test) */}
+                        <div className='h-8 p-2 flex items-center justify-center gap-2'>
+                            <label className='text-sm font-medium '>Font</label>
+                            <select 
+                                value={currentFont}
+                                onChange={(e) => {
+                                    const font = e.target.value
+                                    editor?.chain().focus().setFontFamily(font).run()
+                                }}
+                                className='text-sm px-2 py-1 border rounded hover:bg-gray-100 transition cursor-pointer'
+                            >
+                                {FONT_OPTIONS.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                        style={option.style}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='shrink-0 min-w-[2rem]'>
+                            <DropDownMenu
+                                label={<PiTextAlignJustify className='w-5 h-5' />}
+                                items={[
+                                    { label: <PiTextAlignLeft className='w-6 h-6' />, value: 'left' },
+                                    { label: <PiTextAlignRight className='w-6 h-6' />, value: 'right' },
+                                    { label: <PiTextAlignCenter className='w-6 h-6' />, value: 'center' },
+                                    { label: <PiTextAlignJustify className='w-6 h-6' />, value: 'justify' },
+                                ]}
+                                onSelect={(val) => editor.chain().focus().setTextAlign(val).run()}
+                            />
                         </div>
                     </FloatingMenu>
 
@@ -275,81 +311,3 @@ const Tiptap = ({ onChange }) => {
 
 export default Tiptap
 
-//  items={[
-//                                         { label: "Paragraph", onClick: () => editor.chain().focus().setParagraph().run() },
-//                                         { label: "Horizontal Rule", onClick: () => editor.chain().focus().insertHorizontalRule().run() },
-//                                         { label: "Do Something", onClick: () => alert("Do something") }
-//                                     ]}
-// // const FloatingButton = ({ onClick, children, isActive }) => (
-//     <button
-//         onClick={onClick}
-//         className={`w-8 h-8 flex items-center justify-center text-black rounded-lg hover:bg-gray-200 transition text-sm font-medium ${isActive ? 'bg-gray-200' : ''
-//             }`}
-//     >
-//         {children}
-//     </button>
-// );
-{/* <FloatingMenu
-                        editor={editor}
-                        tippyOptions={{ duration: 100, offset: [-40, 4] }}
-                        className='bg-white border shadow-lg rounded-full px-2 py-1 flex space-x-1'
-                    >
-                        {[1, 2, 3].map(level => (
-                            <FloatingButton
-                                key={level}
-                                onClick={() => editor.chain().focus().toggleHeading({ level }).run()}
-                                isActive={editor.isActive('heading', { level })}
-                            >
-                                H{level}
-                            </FloatingButton>
-                        ))}
-
-                        <FloatingButton
-                            onClick={() => toggleMark(editor, 'italic')}
-                            isActive={editor.isActive('italic')}
-                        >
-                            <span className='italic'> I </span>
-                        </FloatingButton>
-
-                        <FloatingButton
-                            onClick={() => toggleMark(editor, 'bold')}
-                            isActive={editor.isActive('bold')}
-                        >
-                            <strong>B</strong>
-                        </FloatingButton>
-
-                        <FloatingButton
-                            onClick={() => toggleMark(editor, 'underline')}
-                            isActive={editor.isActive('underline')}
-                        >
-                            <u>U</u>
-                        </FloatingButton>
-
-                        <FloatingButton
-                            onClick={() => toggleMark(editor, 'strike')}
-                            isActive={editor.isActive('strike')}
-                        >
-                            <AiOutlineStrikethrough className="w-4 h-4" />
-                        </FloatingButton>
-
-                        <FloatingButton
-                            onClick={setLink}
-                            isActive={editor.isActive('link')}
-                        >
-                            <PiLinkBold className="w-4 h-4" />
-                        </FloatingButton>
-
-                        <FloatingButton
-                            onClick={() => toggleMark(editor, 'code')}
-                            isActive={editor.isActive('code')}
-                        >
-                            <PiCodeBold className="w-4 h-4" />
-                        </FloatingButton>
-
-                        <FloatingButton
-                            onClick={() => editor.chain().focus().toggleBulletList().run()}
-                            isActive={editor.isActive('bulletList')}
-                        >
-                            List
-                        </FloatingButton>
-                    </FloatingMenu> */}
