@@ -4,10 +4,31 @@ import InPageNavigation from '../components/InPageNavigation'
 import PostList from '../components/PostList'
 import MainLayout from '../components/MainLayout'
 import SideBar from '../components/SideBar'
+import { useEffect, useState } from 'react'
+import PostListItem from '../components/PostListItem'
+import { mockBlogs as mock_trending_post } from '../config/post-config'
+import MinimalPost from '../components/MinimalPost'
 
 const Homepage = () => {
+
+  const [blogs, setBlogs] = useState(null);
+  const [trendingBlogs, setTrendingBlogs] = useState(null);
+
+  /* fetchLastesBlogs function 
+      fetch แล้วจะไปเก็บในตัวแปร blogs
+  */
+  /* fetchTrendingBlogs function */
+
+  useEffect(() => {
+    // fetchLastesBlogs();
+    // fetchTrendingBlogs();
+
+    // use mock data for testing UI
+    setTrendingBlogs(mock_trending_post);
+  }, [])
+
   return (
-    
+
     <AnimationWrapper keyValue="homepage">
       <div className="mt-4 flex flex-col gap-4">
         {/* 1. BREADCRUMB */}
@@ -28,24 +49,65 @@ const Homepage = () => {
 
       {/* 3. MAIN CONTENT + SIDEBAR */}
       {/* 3.1) Latest blog and Trending */}
-      {/* "Content alignment with max-width container and auto margin" => max-w-6xl mx-auto px-4 */}   
+      {/* "Content alignment with max-width container and auto margin" => max-w-6xl mx-auto px-4 */}
       <MainLayout sidebar={<SideBar />}>
         <div className="w-full">
-        <InPageNavigation routes={["All Post", "Trending"]} defaultHidden={["Trending"]}>
-          <h1>Lastest Blogs Here</h1>
-          <h1>Trending Blogs Here</h1>
-        </InPageNavigation>
-      </div>
+          <InPageNavigation routes={["All Post", "Trending"]} defaultHidden={["Trending"]}>
 
-      {/* POST LIST */}
-        <PostList />
-      
-      {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
+            <>
+
+              <h1>Lastest Blogs Here</h1>
+              {/* POST LIST */}
+              <PostList />
+              {/* {
+                //blogs == null ? <Loader /> :
+                blogs.map((blog, i) => {
+                  return <AnimationWrapper transition={{duration: 1, delay: i*1}} key={i}>
+                    <PostListItem content={blog} author={blog.author.personal_info} />
+                  </AnimationWrapper>
+                })
+              }
+              */}
+            </>
+
+            {/* MinimalBlogCard component for TRENDING BLOGS */}
+            {/* {
+              trendingBlogs == null ? <Loader /> : 
+              trendingBlogs.map((blog,i) => {
+                return <AnimationWrapper transition={{duration: 1, delay: i*1}} key={i}>
+                  <MinimalPost />
+                </AnimationWrapper>
+              })
+            } */}
+
+            {/* TEST */}
+            {
+              trendingBlogs == null ? (
+                <p>Loading trending blogs...</p>
+              ) : (
+                trendingBlogs.map((blog, i) => (
+                  <AnimationWrapper transition={{ duration: 1, delay: i * 0.2 }} key={blog.blogId}>
+                    <MinimalPost blog={blog} index={i} />
+                  </AnimationWrapper>
+                ))
+              )
+            }
+
+
+          </InPageNavigation>
+        </div>
+
+        {/*  TRENDING */}
+
+
+
+
+        {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
       </MainLayout>
-        
+
 
     </AnimationWrapper>
-    
+
   )
 }
 

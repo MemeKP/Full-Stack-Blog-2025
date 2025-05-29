@@ -3,7 +3,7 @@ import './editor.css'
 import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react'
 import { PiLinkBold, PiCodeBold, PiTextAlignCenter, PiTextAlignJustify, PiTextAlignLeft, PiTextAlignRight } from "react-icons/pi";
 import { AiOutlineStrikethrough } from "react-icons/ai";
-import React, { Children, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import Paragraph from '@tiptap/extension-paragraph'
 import Bold from '@tiptap/extension-bold'
@@ -17,13 +17,11 @@ import Link from '@tiptap/extension-link'
 import Strike from '@tiptap/extension-strike'
 import Code from '@tiptap/extension-code'
 import FontFamily from '@tiptap/extension-font-family'
-
-import DropDownMenu from '../DropDownMenu';
-import {FONT_OPTIONS} from './FontConfig'
+import TextAlign from '@tiptap/extension-text-align'
+import { FONT_OPTIONS } from './FontConfig'
 
 // กำหนด Editor
-const Tiptap = ({ onChange }) => {
-
+const PageEditor = ({ onChange }) => {
     const editor = useEditor({
         extensions: [
             Paragraph,
@@ -34,6 +32,9 @@ const Tiptap = ({ onChange }) => {
             Italic,
             Strike,
             Code,
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
             FontFamily.configure({
                 types: ['textStyle']
             }),
@@ -137,7 +138,6 @@ const Tiptap = ({ onChange }) => {
     const setLink = useCallback(() => {
         const previousUrl = editor.getAttributes('link').href
         const url = window.prompt('URL', previousUrl)
-
         // cancelled
         if (url === null) {
             return
@@ -158,54 +158,79 @@ const Tiptap = ({ onChange }) => {
         }
     }, [editor])
 
+    /*Font Update */
+    // const currentFont = editor?.getAttributes('textStyle').FontFamily || ''
+    const [currentFont, setCurrentFont] = useState('');
+    useEffect(() => {
+        if (!editor) return;
+
+        const updateFont = () => {
+            const font = editor.getAttributes('textStyle').fontFamily || '';
+            setCurrentFont(font);
+        };
+
+        editor.on('selectionUpdate', updateFont);
+        editor.on('transaction', updateFont); // สำคัญมากเวลาเปลี่ยน font
+
+        updateFont(); // set initial
+
+        return () => {
+            editor.off('selectionUpdate', updateFont);
+            editor.off('transaction', updateFont);
+        };
+    }, [editor]);
+
+    /*Align Update */
+    const [selected, setSelected] = useState('justify');
+    const handleSelect = (val) => {
+        setSelected(val);
+        editor.chain().focus().setTextAlign(val).run();
+    };
+
     if (!editor) {
         return null
     }
 
-    const currentFont = editor?.getAttributes('textStyle').FontFamily || ''
-
     return (
-        <div className="border-none p-4">
+        <div className='tiptap w-full border-none overflow-visible relative px-4'>
+
             {editor && (
                 <>
                     <link
                         href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Mitr:wght@200;300;400;500;600;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Shadows+Into+Light&display=swap" rel="stylesheet"
                     />
-                    
-                    {/* Bubble Menu: ปรากฏเมื่อเลือกข้อความ */}
-                    <BubbleMenu editor={editor} className="bg-white border shadow rounded flex gap-2 px-2 py-1">
-                        <button onClick={() => editor.chain().focus().toggleBold().run()} className="font-bold">B</button>
-                        <button onClick={() => editor.chain.focus().toggleHeading({ level: 1 }).run()}
-                            className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
-                        >
-                            H1
-                        </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                            className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
-                        >
-                            H2
-                        </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                            className={editor.isActive('heading', { level: 3 }) ? 'is-active' : ''}
-                        >
-                            H3
-                        </button>
-                        <button onClick={() => editor.chain().focus().toggleItalic().run()} className="italic">I</button>
-                        <button onClick={() => editor.chain().focus().toggleUnderline().run()} className="underline">U</button>
-                        
-                    </BubbleMenu>
-
-                    {/* Floating Menu: ปรากฏเมื่ออยู่บรรทัดใหม่ */}
-
-                    <FloatingMenu
+                    {/* Do as Floating Menu */}
+                    <BubbleMenu
                         editor={editor}
                         tippyOptions={{
+                            placement: "top",
                             duration: 100,
-                            offset: [-40, 4],
+                            boundary: "clippingParents",
+                            rootBoundary: "document",
+                            modifiers: [
+                                {
+                                    name: "offset",
+                                    options: {
+                                        offset: [0, 12],
+                                    },
+                                },
+                                {
+                                    name: "preventOverflow",
+                                    options: {
+                                        padding: 8,
+                                        boundary: "clippingParents",
+                                        tether: false,
+                                    },
+                                },
+                                {
+                                    name: "flip",
+                                    options: {
+                                        fallbackPlacements: ["top", "bottom"],
+                                    },
+                                },
+                            ],
                         }}
-                        className="flex flex-nowrap w-max whitespace-nowrap bg-white border shadow-lg rounded-full px-2 py-1"
+                        className="flex w-max flex-nowrap md:overflow-x-auto whitespace-nowrap bg-white border shadow-lg rounded-full px-2 gap-2 py-1 z-50"
                     >
                         <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                             className='w-8 h-8 flex items-center justify-center  text-black rounded-full hover:bg-gray-100 transition text-sm font-medium'
@@ -265,16 +290,46 @@ const Tiptap = ({ onChange }) => {
                         >
                             <PiCodeBold className='w-4 h-4' />
                         </button>
+                        <div className="control-group flex">
+                            <div className="button-group flex">
+                                <button
+                                    onClick={() => editor.chain().focus().setTextAlign('left').run()}
+                                    className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
+                                        ${editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''}`}
+                                >
+                                    <PiTextAlignLeft className='w-4 h-4' />
+                                </button>
+                                <button
+                                    onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                                    className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
+                                        ${editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''}`}                                >
+                                    <PiTextAlignCenter className='w-4 h-4' />
+                                </button>
+                                <button
+                                    onClick={() => editor.chain().focus().setTextAlign('right').run()}
+                                    className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
+                                        ${editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''}`}                                >
+                                    <PiTextAlignRight className='w-4 h-4' />
+                                </button>
+                                <button
+                                    onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+                                    className={`w-8 h-8 flex items-center justify-center text-black rounded-full hover:bg-gray-100 transition text-sm font-medium
+                                        ${editor.isActive({ textAlign: 'justify' }) ? 'is-active' : ''}`}                                >
+                                    <PiTextAlignJustify className='w-4 h-4' />
+                                </button>
+
+                            </div>
+                        </div>
                         {/* Font Dropdown (test) */}
-                        <div className='h-8 p-2 flex items-center justify-center gap-2'>
-                            <label className='text-sm font-medium '>Font</label>
-                            <select 
+                        <div className='relative h-8 px-2 text-left inline-block gap-2'>
+                            <label className='sr-only'>Font</label>
+                            <select
                                 value={currentFont}
                                 onChange={(e) => {
                                     const font = e.target.value
                                     editor?.chain().focus().setFontFamily(font).run()
                                 }}
-                                className='text-sm px-2 py-1 border rounded hover:bg-gray-100 transition cursor-pointer'
+                                className='inline-flex w-full h-8 justify-center items-center gap-x-1.5 rounded-md bg-white px-2 text-sm font-medium text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 cursor-pointer appearance-none focus:outline-none'
                             >
                                 {FONT_OPTIONS.map((option) => (
                                     <option
@@ -285,29 +340,22 @@ const Tiptap = ({ onChange }) => {
                                         {option.label}
                                     </option>
                                 ))}
+
                             </select>
+                            <div className='absolute pointer-events-none inset-y-5 right-3 flex items-center justify-center'>
+                                <svg className="h-5 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd" />
+                                </svg>
+                            </div>
                         </div>
-                        <div className='shrink-0 min-w-[2rem]'>
-                            <DropDownMenu
-                                label={<PiTextAlignJustify className='w-5 h-5' />}
-                                items={[
-                                    { label: <PiTextAlignLeft className='w-6 h-6' />, value: 'left' },
-                                    { label: <PiTextAlignRight className='w-6 h-6' />, value: 'right' },
-                                    { label: <PiTextAlignCenter className='w-6 h-6' />, value: 'center' },
-                                    { label: <PiTextAlignJustify className='w-6 h-6' />, value: 'justify' },
-                                ]}
-                                onSelect={(val) => editor.chain().focus().setTextAlign(val).run()}
-                            />
-                        </div>
-                    </FloatingMenu>
+                    </BubbleMenu>
 
                 </>
             )}
-
-            <EditorContent editor={editor} className='className="tiptap prose prose-xl max-w-none"' />
+            <EditorContent editor={editor} />
         </div>
     )
 }
 
-export default Tiptap
+export default PageEditor
 

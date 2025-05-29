@@ -4,6 +4,7 @@
     margin-top: 0;
   }
 
+
   /* Heading styles */
   h1,
   h2,
@@ -44,5 +45,12 @@
     /* text-xl */
     font-weight: 500;
   }
+
+  .tiptap .tippy-2 {
+  max-width: 100% !important;
+  left: 500 !important;
+  right: 500 !important;
+  margin: auto !important;
+}
 
 }
