@@ -8,11 +8,26 @@ import { useEffect, useState } from 'react'
 import PostListItem from '../components/PostListItem'
 import { mockBlogs as mock_trending_post } from '../config/post-config'
 import MinimalPost from '../components/MinimalPost'
+import { activeTabRef } from '../components/InPageNavigation'
+import NoDataMessage from '../components/NoDataMessage'
 
 const Homepage = () => {
 
-  const [blogs, setBlogs] = useState(null);
+  const [blogs, setBlogs] = useState(null); //ใช้ใน sidebar
   const [trendingBlogs, setTrendingBlogs] = useState(null);
+  let [pageSate, setPageState] = useState('All Post');
+
+
+  const loadBlogByCategory = (category) => {
+    setBlogs(null);
+
+    if (pageSate === category) {
+      setPageState('All Post');
+      return;
+    }
+
+    setPageState(category)
+  }
 
   /* fetchLastesBlogs function 
       fetch แล้วจะไปเก็บในตัวแปร blogs
@@ -20,12 +35,20 @@ const Homepage = () => {
   /* fetchTrendingBlogs function */
 
   useEffect(() => {
-    // fetchLastesBlogs();
-    // fetchTrendingBlogs();
+
+    activeTabRef.current.click() //update hr ให้พอดีกับตนส
+
+    if (pageSate === 'All Post') {
+      // fetchLastesBlogs();
+    }
+
+    if (pageSate === 'Trending') {
+      // fetchTrendingBlogs();
+    }
 
     // use mock data for testing UI
     setTrendingBlogs(mock_trending_post);
-  }, [])
+  }, [pageSate])
 
   return (
 
@@ -50,9 +73,16 @@ const Homepage = () => {
       {/* 3. MAIN CONTENT + SIDEBAR */}
       {/* 3.1) Latest blog and Trending */}
       {/* "Content alignment with max-width container and auto margin" => max-w-6xl mx-auto px-4 */}
-      <MainLayout sidebar={<SideBar />}>
+      <MainLayout
+        sidebar={
+          <SideBar
+            pageState={pageSate}
+            loadBlogByCategory={loadBlogByCategory}
+          />
+        }
+      >
         <div className="w-full">
-          <InPageNavigation routes={["All Post", "Trending"]} defaultHidden={["Trending"]}>
+          <InPageNavigation routes={[pageSate, "Trending"]} defaultHidden={["Trending"]}>
 
             <>
 
@@ -83,13 +113,16 @@ const Homepage = () => {
             {/* TEST */}
             {
               trendingBlogs == null ? (
+                // <Loading />
                 <p>Loading trending blogs...</p>
               ) : (
-                trendingBlogs.map((blog, i) => (
-                  <AnimationWrapper transition={{ duration: 1, delay: i * 0.2 }} key={blog.blogId}>
-                    <MinimalPost blog={blog} index={i} />
-                  </AnimationWrapper>
-                ))
+                trendingBlogs.length ?
+                  trendingBlogs.map((blog, i) => (
+                    <AnimationWrapper transition={{ duration: 1, delay: i * 0.2 }} key={blog.blogId}>
+                      <MinimalPost blog={blog} index={i} />
+                    </AnimationWrapper>
+                  ))
+                : <NoDataMessage message='No blog published'/>
               )
             }
 

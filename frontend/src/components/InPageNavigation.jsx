@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useRef} from 'react'
 
+export let activeTabLineRef;
+export let activeTabRef;
+
 const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, children}) => {
 
-  let activeTabLineRef = useRef();
+  activeTabLineRef = useRef(); //ต้องใช้ใน homepage ด้วย (update hr)
   let [inPageNavIndex, setinPageNavIndex] = useState(defaultActiveIndex);
-  let activeTabRef = useRef();
+  activeTabRef = useRef(); //ต้องใช้ใน homepage ด้วย
 
   const changePageState = (btn, i) => {
     console.log(btn, i);
