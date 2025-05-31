@@ -16,3 +16,8 @@ body{
   height: 0;
   float: left;
 }
+
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+}
+

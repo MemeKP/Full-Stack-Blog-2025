@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import React from 'react'
 import Homepage from './routes/Homepage.jsx'
 import LoginPage from './routes/LoginPage.jsx'
 import PostListPage from './routes/PostListPage.jsx'
@@ -17,6 +16,7 @@ import SinglePostPage from './routes/SinglePostPage.jsx'
 import MainLayout from './layouts/MainLayout.jsx'
 import { AuthProvider } from './context/authContext/index.jsx'
 import ProfilePage from './routes/ProfilePage.jsx'
+import { SearchProvider } from './context/SearchContext.jsx' 
 
 
 const router = createBrowserRouter([
@@ -58,8 +58,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
+    <SearchProvider>
+       <AuthProvider>
        <RouterProvider router={router} />
     </AuthProvider>
+    </SearchProvider>
   </StrictMode>,
 )

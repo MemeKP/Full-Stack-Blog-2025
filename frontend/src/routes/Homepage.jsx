@@ -5,27 +5,27 @@ import PostList from '../components/PostList'
 import MainLayout from '../components/MainLayout'
 import SideBar from '../components/SideBar'
 import { useEffect, useState } from 'react'
-import PostListItem from '../components/PostListItem'
-import { mockBlogs as mock_trending_post } from '../config/post-config'
+import { mockBlogs as mock_trending_post } from '../config/trending-config'
 import MinimalPost from '../components/MinimalPost'
 import { activeTabRef } from '../components/InPageNavigation'
 import NoDataMessage from '../components/NoDataMessage'
+import { blog_data as allBlogs } from '../config/data-config'
+import { useSearch } from '../context/SearchContext'
 
 const Homepage = () => {
 
   const [blogs, setBlogs] = useState(null); //ใช้ใน sidebar
   const [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageSate, setPageState] = useState('All Post');
-
+  const {query} = useSearch();
+  const [ filteredBlogs, setFilteredBlogs ] = useState(allBlogs);
 
   const loadBlogByCategory = (category) => {
     setBlogs(null);
-
     if (pageSate === category) {
       setPageState('All Post');
       return;
     }
-
     setPageState(category)
   }
 
@@ -35,20 +35,27 @@ const Homepage = () => {
   /* fetchTrendingBlogs function */
 
   useEffect(() => {
-
     activeTabRef.current.click() //update hr ให้พอดีกับตนส
-
     if (pageSate === 'All Post') {
       // fetchLastesBlogs();
     }
-
     if (pageSate === 'Trending') {
       // fetchTrendingBlogs();
     }
-
     // use mock data for testing UI
     setTrendingBlogs(mock_trending_post);
   }, [pageSate])
+  
+  useEffect(() => {
+    const lowerQuery = query.toLowerCase();
+    const result = allBlogs.filter(blog => (
+      blog.title.toLowerCase().includes(lowerQuery) ||
+      blog.desc.toLowerCase().includes(lowerQuery) ||
+      blog.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+    ));
+
+    setFilteredBlogs(result);
+  }, [query])
 
   return (
 
@@ -85,7 +92,6 @@ const Homepage = () => {
           <InPageNavigation routes={[pageSate, "Trending"]} defaultHidden={["Trending"]}>
 
             <>
-
               <h1>Lastest Blogs Here</h1>
               {/* POST LIST */}
               <PostList />
@@ -126,21 +132,15 @@ const Homepage = () => {
               )
             }
 
-
           </InPageNavigation>
         </div>
 
         {/*  TRENDING */}
 
-
-
-
         {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
       </MainLayout>
 
-
     </AnimationWrapper>
-
   )
 }
 

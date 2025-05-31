@@ -3,9 +3,12 @@ import { useState } from 'react';
 import IKImageWrapper from './IKImageWrapper'
 import SearchBar from './SearchBar';
 import { Link } from 'react-router-dom';
-import AnimationWrapper from '../common/page-animation';
+import { useSearch } from '../context/SearchContext';
 
-const Navbar = () => {
+// Update Navbar.jsx to accept onSearch prop
+const Navbar = ( ) => {
+
+    const { setQuery } = useSearch(); //แชร์ state search query ระหว่าง Navbar และ HomePage (อย่าลืมลบ prop ออกถ้าใช้)
     const urlEndpoint = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
     const [open, setOpen] = useState(false); // For more info and mobile menu icon
   
@@ -45,7 +48,7 @@ const Navbar = () => {
             <Link to="/"className='hover:text-cyan-500 duration-200'>About</Link>
 
             {/* SEARCH BAR */}
-            <SearchBar />
+            <SearchBar onSearch={setQuery}/>
 
             <Link to='/login'>
                 <button className='py-2 px-4 rounded-3xl bg-cyan-500 text-white hover:bg-cyan-600 duration-200'>Login</button>

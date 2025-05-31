@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import { GoArrowRight } from "react-icons/go";
 import { recommend_topic } from "../config/category";
-import { useState } from "react";
 
 const SideBar = ({ pageState, loadBlogByCategory }) => {
 
