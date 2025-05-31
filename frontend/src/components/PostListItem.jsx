@@ -3,9 +3,9 @@ import IKImageWrapper from "./IKImageWrapper"
 
 const PostListItem = () => {
   return (
-    <div className="flex flex-col xl:flex-row gap-8">
+    <div className=" py-4 mt-4 flex flex-col xl:flex-row gap-8">
       {/* image */}
-      <div className="w-full xl:w-1/3">
+      <div className=" w-full xl:w-1/3">
         <IKImageWrapper 
         src='post2.jpg' 
         className="rounded-2xl object-cover w-full h-48 "
@@ -15,7 +15,7 @@ const PostListItem = () => {
       </div>
 
       {/* details */}
-      <div className="flex flex-col gap-4 xl:w-2/3">
+      <div className="flex flex-col gap-3 xl:w-2/3">
         <Link 
         to='/test' 
         className="text-4xl xl:text-3xl font-semibold leading-snug line-clamp-1"

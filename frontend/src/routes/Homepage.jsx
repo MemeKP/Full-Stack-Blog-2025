@@ -17,8 +17,8 @@ const Homepage = () => {
   const [blogs, setBlogs] = useState(null); //ใช้ใน sidebar
   const [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageSate, setPageState] = useState('All Post');
-  const {query} = useSearch();
-  const [ filteredBlogs, setFilteredBlogs ] = useState(allBlogs);
+  const { query } = useSearch();
+  const [filteredBlogs, setFilteredBlogs] = useState(allBlogs);
 
   const loadBlogByCategory = (category) => {
     setBlogs(null);
@@ -38,6 +38,7 @@ const Homepage = () => {
     activeTabRef.current.click() //update hr ให้พอดีกับตนส
     if (pageSate === 'All Post') {
       // fetchLastesBlogs();
+      // setBlogs(allBlogs); // use mock data for testing UI
     }
     if (pageSate === 'Trending') {
       // fetchTrendingBlogs();
@@ -45,7 +46,8 @@ const Homepage = () => {
     // use mock data for testing UI
     setTrendingBlogs(mock_trending_post);
   }, [pageSate])
-  
+
+
   useEffect(() => {
     const lowerQuery = query.toLowerCase();
     const result = allBlogs.filter(blog => (
@@ -91,8 +93,8 @@ const Homepage = () => {
         <div className="w-full">
           <InPageNavigation routes={[pageSate, "Trending"]} defaultHidden={["Trending"]}>
 
+            {/* LASTEST BLOG */}
             <>
-              <h1>Lastest Blogs Here</h1>
               {/* POST LIST */}
               <PostList />
               {/* {
@@ -104,9 +106,25 @@ const Homepage = () => {
                 })
               }
               */}
+
+              {/* TEST: Latest Blogs */}
+              {/* {
+                blogs == null ? (
+                  // <Loading />
+                  <p>Loading Lastest blogs...</p>
+                ) : (
+                  blogs.length ?
+                    blogs.map((blog, i) => (
+                      <AnimationWrapper transition={{ duration: 1, delay: i * 0.2 }} key={blog.blogId}>
+                        <MinimalPost blog={blog} index={i} />
+                      </AnimationWrapper>
+                    ))
+                    : <NoDataMessage message='No blog published' />
+                )
+              } */}
             </>
 
-            {/* MinimalBlogCard component for TRENDING BLOGS */}
+            {/* TRENDING BLOGS */}
             {/* {
               trendingBlogs == null ? <Loader /> : 
               trendingBlogs.map((blog,i) => {
@@ -115,8 +133,7 @@ const Homepage = () => {
                 </AnimationWrapper>
               })
             } */}
-
-            {/* TEST */}
+            {/* TEST: Trending Blogs */}
             {
               trendingBlogs == null ? (
                 // <Loading />
@@ -128,7 +145,7 @@ const Homepage = () => {
                       <MinimalPost blog={blog} index={i} />
                     </AnimationWrapper>
                   ))
-                : <NoDataMessage message='No blog published'/>
+                  : <NoDataMessage message='No blog published' />
               )
             }
 
