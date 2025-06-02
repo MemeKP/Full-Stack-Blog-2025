@@ -9,108 +9,108 @@ import mongoose, { Schema } from "mongoose";
 * - Bookmark/Reaction/Comment (อ้างอิงกับ Post._id) *maybe later*
 */
 const postSchema = new Schema({
-    user: {
-        type: Schema.Types.ObjectId, 
-        ref: "User", 
-        required: true,
-    },
-    img: {
-        type: String
-    },
-    title: {
-        type: String,
-        required: true
-    },
-    slug: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    desc: {
-        type: String,
-    },
-    content: {
-        type: String,
-        required: true,
-    },
-    //     blog_id: {
-    //         type: String,
-    //         required: true,
-    //         unique: true,
-    //     },
-    //     title:{
-    //         type: String,
-    //         required: true,
-    //     }, 
-    //     banner:{
-    //         type: String,
-    //         // required: true,
-    //     },
-    //     desc: {
-    //         type: String,
-    //         maxlength: 200,
-    //         // required: true,
-    //     },
-    //     content:{
-    //         type: String, //[]
-    //         required: true,
-    //     },
-    //     tags: {
-    //         type: [String],
-    //         // required: true,
-    //     },
-    //     author: {
-    //         type: Schema.Types.ObjectId,
-    //         // required: true,
-    //         // ref: "users"
-    //     },
-    //     activity: {
-    //         total_likes: {
-    //             type: Number,
-    //             default: 0,
-    //         },
-    //         total_comments: {
-    //             type: Number,
-    //             default: 0,
-    //         },
-    //         total_reads: {
-    //             type: Number,
-    //             default: 0,
-    //         },
-    //         total_parent_comments: {
-    //             type: Number,
-    //             default: 0,
-    //         },
-    //     },
-    //     comments: {
-    //         type: [Schema.Types.ObjectId],
-    //         ref: "comments"
-    //     },
-    //     publishedAt: {
-    //         type: Date,
-    //     },
-    //     isPublishedAt: { //for draf blog
-    //         type: Boolean,
-    //         default: false,
-    //     },
-    //     slug: {
-    //         type: String,
-    //         required: true,
-    //         unique: true,
-    //     },
-    //     isFeatured: {
-    //         type: Boolean,
-    //         default: false,
-    //     },
-    //     visit: {
-    //         type: Boolean,
-    //         default: 0,
-    //     },
+    // user: {
+    //     type: Schema.Types.ObjectId, 
+    //     ref: "User", 
+    //     required: true,
+    // },
+    // img: {
+    //     type: String
+    // },
+    // title: {
+    //     type: String,
+    //     required: true
+    // },
+    // slug: {
+    //     type: String,
+    //     required: true,
+    //     unique: true,
+    // },
+    // desc: {
+    //     type: String,
+    // },
+    // content: {
+    //     type: String,
+    //     required: true,
+    // },
+        blog_id: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        title:{
+            type: String,
+            required: true,
+        }, 
+        banner:{
+            type: String,
+            // required: true,
+        },
+        desc: {
+            type: String,
+            maxlength: 200,
+            required: true,
+        },
+        content:{
+            type: String, //[]
+            required: true,
+        },
+        tags: {
+            type: [String],
+            // required: true,
+        },
+        author: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User"
+        },
+        activity: {
+            total_likes: {
+                type: Number,
+                default: 0,
+            },
+            total_comments: {
+                type: Number,
+                default: 0,
+            },
+            total_reads: {
+                type: Number,
+                default: 0,
+            },
+            total_parent_comments: {
+                type: Number,
+                default: 0,
+            },
+        },
+        comments: {
+            type: [Schema.Types.ObjectId],
+            ref: "Comment"
+        },
+        publishedAt: {
+            type: Date,
+        },
+        isPublishedAt: { //for draf blog
+            type: Boolean,
+            default: false,
+        },
+        slug: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        isFeatured: {
+            type: Boolean,
+            default: false,
+        },
+        visit: {
+            type: Number,
+            default: 0,
+        },
 
 }, {
     timestamps: {
-        // createdAt: 'publishedAt', //true 
-        createdAt: true, //true 
+        createdAt: 'publishedAt', 
+        // createdAt: true, 
     }
 });
 

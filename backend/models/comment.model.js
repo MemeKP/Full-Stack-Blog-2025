@@ -4,12 +4,12 @@ const commentSchema = new Schema({
     blog_id: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: "blogs",
+        ref: "Post",
     },
     blog_author:{
         type: String,
         required: true,
-        ref: "blogs",
+        ref: "Post",
     },
     comment:{
         type: String,
@@ -17,19 +17,19 @@ const commentSchema = new Schema({
     },
     children:{
         type: [Schema.Types.ObjectId],
-        ref: "comments"
+        ref: "Comment"
     },
     comment_by: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: "user",
+        ref: "User",
     },
     isReply:{
         type: Boolean,
     },
     parent:{
         type: Schema.Types.ObjectId,
-        ref: 'comments'
+        ref: 'Comment'
     },
 }, {
     timestamps: {
