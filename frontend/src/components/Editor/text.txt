@@ -1,0 +1,43 @@
+{/* Bubble Menu: ปรากฏเมื่อเลือกข้อความ */}
+                    {/* <BubbleMenu editor={editor} className="bg-white border shadow rounded flex gap-2 px-2 py-1">
+                        <button onClick={() => editor.chain().focus().toggleBold().run()} className="font-bold">B</button>
+                        <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                            className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
+                        >
+                            H1
+                        </button>
+                        <button
+                            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                            className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
+                        >
+                            H2
+                        </button>
+                        <button
+                            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                            className={editor.isActive('heading', { level: 3 }) ? 'is-active' : ''}
+                        >
+                            H3
+                        </button>
+                        <button onClick={() => editor.chain().focus().toggleItalic().run()} className="italic">I</button>
+                        <button onClick={() => editor.chain().focus().toggleUnderline().run()} className="underline">U</button>
+
+                    </BubbleMenu> */}
+{/* Font Dropdown ft.TipTap but it doesn't work*/}
+                            {/* <DropDownMenu
+                            label={currentFont || 'Default'}
+                            items={FONT_OPTIONS.map(option => ({
+                                label: <span style={option.style}>{option.label}</span>,
+                                value: option.value,
+                            }))}
+                            onSelect={(val) => {
+                                editor?.chain().focus().setFontFamily(val).run();
+                            }}
+                            className='h-8'
+                        /> */}
+                            {/* <div className='shrink-0 min-w-[2rem]'>
+                            <DropDownMenu
+                                label={ALIGN_ICONS[selected]}
+                                items={TEXT_ALIGN_OPTIONS}
+                                onSelect={handleSelect}
+                            />
+                        </div> */}
