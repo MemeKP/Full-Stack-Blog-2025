@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
-import { dosignInWithEmailAndPassword, doSignInWithGoogle } from '../../firebase/auth';
-import { useAuth } from '../../context/authContext'
+import { dosignInWithEmailAndPassword, doSignInWithGoogle } from '../../firebase/auth.js';
+import { useAuth } from '../../context/authContext/userAuthContext.jsx'
+import { getAuth } from 'firebase/auth';
+import { sendUserToServer } from './sendUserToServer.js';
 
 const Login = () => {
     const { userLoggedIn } = useAuth()
@@ -11,27 +13,42 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState('')
 
     const onSubmit = async (e) => {
-        e.preventDefault()
-        if(!isSigningIn) {
-            setIsSigningIn(true)
-            await dosignInWithEmailAndPassword(email, password)
-            // doSendEmailVerification()
-        }
-    }
-
-    const onGoogleSignIn = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (!isSigningIn) {
-            setIsSigningIn(true)
-            doSignInWithGoogle().catch(err => {
-                setIsSigningIn(false)
-            })
+            setIsSigningIn(true);
+            try {
+                await dosignInWithEmailAndPassword(email, password);
+                const user = getAuth().currentUser;
+                await sendUserToServer(user);
+            } catch (err) {
+                setErrorMessage("Login failed");
+                console.error(err);
+            } finally {
+                setIsSigningIn(false);
+            }
         }
-    }
+    };
+
+    const onGoogleSignIn = async (e) => {
+        e.preventDefault();
+        if (!isSigningIn) {
+            setIsSigningIn(true);
+            try {
+                const result = await doSignInWithGoogle();
+                const user = result.user;
+                await sendUserToServer(user);
+            } catch (err) {
+                setErrorMessage("Google login failed");
+                console.error(err);
+            } finally {
+                setIsSigningIn(false);
+            }
+        }
+    };
 
     return (
         <div>
-            {userLoggedIn && (<Navigate to={'/'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/login'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-6 p-4 shadow-xl border rounded-xl">

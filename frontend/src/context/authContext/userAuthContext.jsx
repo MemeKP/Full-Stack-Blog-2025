@@ -8,6 +8,13 @@ export function useAuth(){
     return useContext(AuthContext);
 }
 
+const getFirebaseToken = async () => {
+    if (auth.currentUser) {
+        return await auth.currentUser.getIdToken();
+    }
+    return null;
+};
+
 export function AuthProvider({ children }){
     const [currentUser, setCurrentUser ] = useState(null);
     const [userLoggedIn, setUserLoggedIn ] = useState(false);
@@ -35,7 +42,8 @@ export function AuthProvider({ children }){
     const value = {
         currentUser,
         userLoggedIn,
-        loading 
+        loading,
+        getFirebaseToken, 
     }
 
     return (

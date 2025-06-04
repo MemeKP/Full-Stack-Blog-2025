@@ -14,7 +14,7 @@ import {
 } from "react-router-dom";
 import SinglePostPage from './routes/SinglePostPage.jsx'
 import MainLayout from './layouts/MainLayout.jsx'
-import { AuthProvider } from './context/authContext/index.jsx'
+import { AuthProvider } from './context/authContext/userAuthContext.jsx'
 import ProfilePage from './routes/ProfilePage.jsx'
 import { SearchProvider } from './context/SearchContext.jsx' 
 

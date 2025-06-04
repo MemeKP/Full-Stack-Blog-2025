@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/authContext'
-import { doCreateUserWithEmailPassword } from '../../firebase/auth'
+import { useAuth } from '../../context/authContext/userAuthContext.jsx'
+import { getAuth } from 'firebase/auth';
+import { sendUserToServer } from './sendUserToServer.js';
+import { doCreateUserWithEmailPassword } from '../../firebase/auth.js'
 const Register = () => {
 
     const navigate = useNavigate()
@@ -15,16 +17,31 @@ const Register = () => {
     const { userLoggedIn } = useAuth()
 
     const onSubmit = async (e) => {
-        e.preventDefault()
-        if(!isRegistering) {
-            setIsRegistering(true)
-            await doCreateUserWithEmailPassword(email, password)
+        e.preventDefault();
+        if (!isRegistering) {
+            if (password !== confirmPassword) {
+                setErrorMessage("Passwords do not match");
+                return;
+            }
+
+            setIsRegistering(true);
+            try {
+                await doCreateUserWithEmailPassword(email, password);
+                const user = getAuth().currentUser;
+                await sendUserToServer(user);
+            } catch (err) {
+                setErrorMessage("Registration failed");
+                console.error(err);
+            } finally {
+                setIsRegistering(false);
+            }
         }
-    }
+    };
+
 
     return (
         <>
-            {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/register'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl">
