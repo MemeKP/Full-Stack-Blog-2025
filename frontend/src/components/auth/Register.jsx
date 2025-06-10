@@ -6,7 +6,7 @@ import { sendUserToServer } from './sendUserToServer.js';
 import { doCreateUserWithEmailPassword } from '../../firebase/auth.js'
 const Register = () => {
 
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

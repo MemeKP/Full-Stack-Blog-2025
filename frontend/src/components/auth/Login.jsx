@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Navigate, Link } from 'react-router-dom'
+import { Navigate, Link, useNavigate } from 'react-router-dom'
 import { dosignInWithEmailAndPassword, doSignInWithGoogle } from '../../firebase/auth.js';
 import { useAuth } from '../../context/authContext/userAuthContext.jsx'
 import { getAuth } from 'firebase/auth';
@@ -12,6 +12,8 @@ const Login = () => {
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
+    let navigate = useNavigate();
+
     const onSubmit = async (e) => {
         e.preventDefault();
         if (!isSigningIn) {
@@ -20,6 +22,7 @@ const Login = () => {
                 await dosignInWithEmailAndPassword(email, password);
                 const user = getAuth().currentUser;
                 await sendUserToServer(user);
+                // navigate("/home")
             } catch (err) {
                 setErrorMessage("Login failed");
                 console.error(err);
@@ -37,6 +40,7 @@ const Login = () => {
                 const result = await doSignInWithGoogle();
                 const user = result.user;
                 await sendUserToServer(user);
+                navigate("/home"); 
             } catch (err) {
                 setErrorMessage("Google login failed");
                 console.error(err);

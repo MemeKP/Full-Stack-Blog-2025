@@ -9,30 +9,6 @@ import mongoose, { Schema } from "mongoose";
 * - Bookmark/Reaction/Comment (อ้างอิงกับ Post._id) *maybe later*
 */
 const postSchema = new Schema({
-    // user: {
-    //     type: Schema.Types.ObjectId, 
-    //     ref: "User", 
-    //     required: true,
-    // },
-    // img: {
-    //     type: String
-    // },
-    // title: {
-    //     type: String,
-    //     required: true
-    // },
-    // slug: {
-    //     type: String,
-    //     required: true,
-    //     unique: true,
-    // },
-    // desc: {
-    //     type: String,
-    // },
-    // content: {
-    //     type: String,
-    //     required: true,
-    // },
         blog_id: {
             type: String,
             required: true,
@@ -54,6 +30,10 @@ const postSchema = new Schema({
         content:{
             type: String, //[]
             required: true,
+        },
+        category: {
+            type: String,
+            default: "general",
         },
         tags: {
             type: [String],
@@ -115,3 +95,28 @@ const postSchema = new Schema({
 });
 
 export default mongoose.model("Post", postSchema)
+
+// user: {
+    //     type: Schema.Types.ObjectId, 
+    //     ref: "User", 
+    //     required: true,
+    // },
+    // img: {
+    //     type: String
+    // },
+    // title: {
+    //     type: String,
+    //     required: true
+    // },
+    // slug: {
+    //     type: String,
+    //     required: true,
+    //     unique: true,
+    // },
+    // desc: {
+    //     type: String,
+    // },
+    // content: {
+    //     type: String,
+    //     required: true,
+    // },

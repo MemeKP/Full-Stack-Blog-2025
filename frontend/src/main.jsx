@@ -12,12 +12,17 @@ import {
   Route,
   Link,
 } from "react-router-dom";
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import SinglePostPage from './routes/SinglePostPage.jsx'
 import MainLayout from './layouts/MainLayout.jsx'
 import { AuthProvider } from './context/authContext/userAuthContext.jsx'
 import ProfilePage from './routes/ProfilePage.jsx'
 import { SearchProvider } from './context/SearchContext.jsx' 
 
+const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
@@ -60,7 +65,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <SearchProvider>
        <AuthProvider>
-       <RouterProvider router={router} />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
     </AuthProvider>
     </SearchProvider>
   </StrictMode>,

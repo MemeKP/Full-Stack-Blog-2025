@@ -17,7 +17,7 @@ export const verifyFirebaseToken = async (req, res, next) => {
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.error("❌ Firebase token verify failed", error);
+    console.error("Firebase token verify failed", error);
     return res.status(403).json({ error: 'Invalid token' });
   }
 };

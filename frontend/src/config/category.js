@@ -5,3 +5,7 @@ export const recommend_topic = [
 export const all_categories = [
     
 ]
+
+export const post_tags = [
+    'DEV', 'AI', 'UX', 'STARTUP'
+]

@@ -7,6 +7,7 @@ import { PiHandsClappingDuotone } from "react-icons/pi";
 import { FaFaceGrinHearts, FaFaceSadCry, FaFaceSurprise, FaFire } from "react-icons/fa6";
 import { IoBookmarksOutline, IoShareOutline } from "react-icons/io5";
 import CommentSection from "../components/CommentSection";
+import { post_tags } from "../config/category";
 
 const SinglePostPage = () => {
   return (
@@ -76,6 +77,20 @@ const SinglePostPage = () => {
 
       </article>
 
+      {/* TAGS/CATEGORIES */}
+      <div className="flex flex-wrap gap-3 pt-9">
+        {post_tags.map((tag, i) => (
+          <button
+            key={i}
+            className="px-3 py-1 rounded-full text-sm font-semibold border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-black transition-all duration-100 shadow-md"
+            //className="px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 text-white hover:brightness-110 transition duration-200"
+          >
+            #{tag}
+          </button>
+        ))}
+      </div>
+
+
       {/* EMOJI REACTION */}
       {/* จะเอาใส่กับ foalting comment */}
       {/* <div className="mt-16 border-t pt-6 flex items-center gap-4 text-xl">
@@ -88,7 +103,7 @@ const SinglePostPage = () => {
       </div>       */}
 
       {/* COMMENT & SHARE */}
-      <div className="relative mt-16 border-t pt-6">
+      <div className="relative mt-6 border-t pt-6">
         <div className="flex flex-row md:flex-row gap-4">
           <div className="flex-1">
             <CommentSection />
