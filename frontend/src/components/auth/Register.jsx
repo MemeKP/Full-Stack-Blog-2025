@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext/userAuthContext.jsx'
 import { getAuth } from 'firebase/auth';
-import { sendUserToServer } from './sendUserToServer.js';
+import { sendUserToServer } from '../../utils/sendUserToServer.js';
 import { doCreateUserWithEmailPassword } from '../../firebase/auth.js'
 const Register = () => {
 

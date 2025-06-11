@@ -3,7 +3,7 @@ import { Navigate, Link, useNavigate } from 'react-router-dom'
 import { dosignInWithEmailAndPassword, doSignInWithGoogle } from '../../firebase/auth.js';
 import { useAuth } from '../../context/authContext/userAuthContext.jsx'
 import { getAuth } from 'firebase/auth';
-import { sendUserToServer } from './sendUserToServer.js';
+import { sendUserToServer } from '../../utils/sendUserToServer.js';
 
 const Login = () => {
     const { userLoggedIn } = useAuth()

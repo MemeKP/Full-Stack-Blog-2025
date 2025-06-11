@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import { sendUserToServer } from "../../utils/sendUserToServer";
 const AuthContext = React.createContext();
 
-export function useAuth(){
+export function useAuth() {
     return useContext(AuthContext);
 }
 
@@ -15,12 +15,12 @@ const getFirebaseToken = async () => {
     return null;
 };
 
-export function AuthProvider({ children }){
-    const [currentUser, setCurrentUser ] = useState(null);
-    const [userLoggedIn, setUserLoggedIn ] = useState(false);
-    const [loading, setLoading ] = useState(true);
+export function AuthProvider({ children }) {
+    const [currentUser, setCurrentUser] = useState(null);
+    const [userLoggedIn, setUserLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(()=>{
+    useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, initializeUser);
         return unsubscribe;
     }, [])
@@ -28,7 +28,9 @@ export function AuthProvider({ children }){
     async function initializeUser(users) {
         //First check if the user is the valid value.
         if (users) {
-            setCurrentUser({...users});
+            // const user = await sendUserToServer(users) //ดึง user จาก backend
+            setCurrentUser({...users}); // ใช้ FirebaseUser
+            // setCurrentUser(user) //แทนที่ FirebaseUser ด้วย MongoDB user ที่มี _id
             setUserLoggedIn(true);
         } else {
             setCurrentUser(null);
@@ -42,13 +44,15 @@ export function AuthProvider({ children }){
     const value = {
         currentUser,
         userLoggedIn,
+        // userLoggedIn: currentUser, // เปลี่ยนตรงนี้
+        // isLoggedIn: userLoggedIn,  // เพิ่ม flag ไว้เช็กว่า login แล้วมั้ย
         loading,
-        getFirebaseToken, 
+        getFirebaseToken,
     }
 
     return (
-       <AuthContext.Provider value={value}> 
+        <AuthContext.Provider value={value}>
             {!loading && children}
-       </AuthContext.Provider>
+        </AuthContext.Provider>
     )
 }

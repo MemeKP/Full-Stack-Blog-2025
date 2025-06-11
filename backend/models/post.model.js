@@ -12,7 +12,7 @@ const postSchema = new Schema({
         blog_id: {
             type: String,
             required: true,
-            unique: true,
+            // unique: true,
         },
         title:{
             type: String,

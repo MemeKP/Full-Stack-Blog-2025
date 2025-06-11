@@ -30,6 +30,7 @@ export const sendUserToServer = async (user) => {
     if (!res.ok) throw new Error("Failed to sync user");
     const data = await res.json();
     console.log("✅ User synced with MongoDB:", data);
+    // return data; //ปรับ sendUserToServer() ให้คืนค่า MongoDB user (ที่มี _id) แล้วเก็บไว้ใช้
   } catch (err) {
     console.error("❌ Error syncing user:", err.message);
   }
