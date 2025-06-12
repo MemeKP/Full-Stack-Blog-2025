@@ -18,9 +18,10 @@ const Write = () => {
   const [category, setCategory] = useState('general');
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
-  const [bannerFile, setBannerFile] = useState(null);
+  const [banner, setBanner] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const [slug, setSlug] = useState('test-slug');
+  const [postId, setPostId] = useState(null);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -36,41 +37,151 @@ const Write = () => {
 
   }, [userLoggedIn]);
 
-  const handlePublish = (isPublished) => async (e) => {
+  // DRAFT SAVE
+  const handleDraftSave = (e) => {
     e.preventDefault();
-    setIsPublished(isPublished);
 
-    let finalSlug = slug;    
+    let finalSlug = slug;
     if (!finalSlug || finalSlug === 'test-slug') {
-      finalSlug = generateSlug(title)
-      setSlug(finalSlug)
+      finalSlug = generateSlug(title);
+      setSlug(finalSlug);
     }
 
-    /* Send to backend */
+    // ตรวจสอบ localStorage เผื่อ _id ยังไม่อยู่ใน state
+    let savedId = null;
+    try {
+      const saved = JSON.parse(localStorage.getItem('draftPost'));
+      savedId = saved?._id || null;
+    } catch (e) {
+      console.warn("Error reading draftPost", e);
+    }
+
     const data = {
+      _id: savedId,
       title,
       content,
-      isPublishedAt: isPublished,
+      isPublishedAt: false,
       desc,
       category,
       tags,
       slug: finalSlug,
-      author: currentUser?._id || '68416df480cba6d146f7b1e3', // FIX: ให้ใช้จาก _id ของ(ุ้ใช้ที่ loggin คนปัจจุบัน) userLoggedIn?._id || '68416df480cba6d146f7b1e3'
-      blog_id: 'default-blog-id' // แก้ตามระบบ
-      // อย่าลืมเพิ่ม field อื่น banner, tags, slug ฯลฯ ให้ครบ!! this might cause 500error
-    }
+      author: currentUser?._id || '68416df480cba6d146f7b1e3',
+    };
 
-    console.log("📤 Payload:", data);
+    console.log("💾 Saving Draft:", data);
     mutation.mutate(data);
   };
+
+  const handlePublish = async (e) => {
+    //prevent toring the blog data twice
+    if (e.target.className.includes('disable')) {
+      return;
+    }
+    if (!title.length) {
+      return toast.error("Please write some title.")
+    }
+    if (!desc.length) {
+      return toast.error("Please write description about your blog.")
+    }
+    let loadingToast = toast.loading("Publishing...");
+
+    e.target.classList.add('disable')
+
+    let blogObj = {
+      title,
+      isPublishedAt: true,
+      banner,
+      desc,
+      content,
+      category,
+      tags,
+      draft: false,
+      author: currentUser?._id || '68416df480cba6d146f7b1e3',
+    }
+
+    const token = await getFirebaseToken();
+
+    axios.post(import.meta.env.VITE_API_URL + "/posts",
+      blogObj, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(() => {
+        e.target.classList.remove('disable')
+        toast.dismiss(loadingToast);
+        toast.success("Published!");
+        setTimeout(() => {
+          navigate('/')
+        }, 500)
+      })
+      .catch((err) => {
+        e.target.classList.remove("disable");
+        toast.dismiss(loadingToast);
+
+        console.error("❌ Post publish error:", err); // เพิ่มบรรทัดนี้
+        const message = err?.response?.data?.error || "Something went wrong.";
+        return toast.error(message);
+      });
+
+  }
+
+  /* PUBLISH POST
+  const handlePublish = async (e) => {
+    e.preventDefault();
+
+    let finalSlug = slug;
+    if (!finalSlug || finalSlug === 'test-slug') {
+      finalSlug = generateSlug(title);
+      setSlug(finalSlug);
+    }
+
+    let localId = null;
+    const savedDraft = localStorage.getItem('draftPost');
+    if (savedDraft) {
+      try {
+        localId = JSON.parse(savedDraft)._id;
+        if (!postId && localId) {
+          setPostId(localId);
+        }
+      } catch (e) {
+        console.warn("❗ Error parsing draftPost:", e);
+      }
+    }
+
+    const data = {
+      _id: localId || postId,
+      title,
+      content,
+      isPublishedAt: true,
+      desc,
+      category,
+      tags,
+      slug: finalSlug,
+      author: currentUser?._id || '68416df480cba6d146f7b1e3',
+    };
+
+    console.log("🚀 Publishing:", data);
+    mutation.mutate(data);
+  };
+  */
+
 
   const mutation = useMutation({
     mutationFn: async (newPosts) => {
       const token = await getFirebaseToken();
+      console.log("✅ mutationFn received:", newPosts);
+      // console.log("📬 mutationFn received _id:", newPosts._id);
       // console.log("Firebase Token:", token);
 
+      const url = newPosts._id
+        ? `${import.meta.env.VITE_API_URL}/posts/${newPosts._id}` // PUT
+        : `${import.meta.env.VITE_API_URL}/posts`;               // POST
+
+      const method = newPosts._id ? 'put' : 'post';
+
       try {
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/posts`, newPosts, {
+        const res = await axios[method](url, newPosts, {
           headers: { Authorization: `Bearer ${token}` }
         });
         return res.data;
@@ -79,18 +190,29 @@ const Write = () => {
         throw err;
       }
     },
-    onSuccess: (res) => {
-      console.log('Post published!', res); 
-      toast.success(isPublished ? 'Post Published!' : 'Draft Saved!');
-      localStorage.removeItem('draftPost')
+    onSuccess: (res, variables) => {
+      console.log('Post published!', res);
 
-      if (isPublished) {
-        navigate(`/${res.slug}`);
-      } else {
-        navigate('/write') //อยากให้อยู่หน้าเดิม
+      // บันทึก _id ที่ได้กลับมาจาก backend
+      if (!postId && res._id) {
+        console.log("✅ Set postId from response:", res._id);
+
+        // อัปเดตลง localStorage ทันทีด้วย
+        const savedDraft = localStorage.getItem('draftPost');
+        const updated = savedDraft
+          ? { ...JSON.parse(savedDraft), _id: res._id }
+          : { _id: res._id };
+        localStorage.setItem('draftPost', JSON.stringify(updated));
+        setPostId(res._id);
       }
-      
+
+      toast.success(variables.isPublishedAt ? 'Post Published!' : 'Draft Saved!');
+
+      if (variables.isPublishedAt) {
+        navigate(`/${res.slug}`);
+      }
     },
+
     onError: (error) => {
       console.error("Error publishing full:", error, error.response?.data);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
@@ -100,19 +222,21 @@ const Write = () => {
   useEffect(() => {
     const savedDraft = localStorage.getItem('draftPost');
     if (savedDraft) {
-      const { title, desc, category, tags, content } = JSON.parse(savedDraft);
+      const { title, desc, category, tags, content, slug, _id } = JSON.parse(savedDraft);
       setTitle(title)
       setDesc(desc)
       setCategory(category)
       setTags(tags)
       setContent(content)
+      if (slug) setSlug(slug)
+      if (_id) setPostId(_id)
     }
   }, [])
 
   useEffect(() => {
-    const draft = { title, desc, category, tags, content }
+    const draft = { title, desc, category, tags, content, slug, _id: postId }
     localStorage.setItem('draftPost', JSON.stringify(draft))
-  }, [title, desc, category, tags, content])
+  }, [title, desc, category, tags, content, slug, postId])
 
   const handleBannerUpload = (e) => {
     const file = e.target.files?.[0];
@@ -248,14 +372,14 @@ const Write = () => {
         {/* PUBLISH & SAVE */}
         <div className="sticky bottom-4 flex justify-end max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <button
-            onClick={(e) => handlePublish(true)(e)}
+            onClick={handlePublish}
             className="bg-cyan-500 text-white px-6 py-2 rounded-full shadow-md hover:bg-cyan-600 transition-all duration-150"
           >
             Publish
           </button>
           <button
-            className=''
-            onClick={(e) => handlePublish(false)(e)}
+            className='ml-4 bg-gray-200 text-gray-800 px-6 py-2 rounded-full shadow hover:bg-gray-300 transition-all duration-150'
+            onClick={handleDraftSave}
           >
             Save Draft
           </button>

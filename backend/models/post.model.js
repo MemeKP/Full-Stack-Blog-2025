@@ -9,10 +9,10 @@ import mongoose, { Schema } from "mongoose";
 * - Bookmark/Reaction/Comment (อ้างอิงกับ Post._id) *maybe later*
 */
 const postSchema = new Schema({
-        blog_id: {
+       blog_id: {
             type: String,
             required: true,
-            // unique: true,
+            unique: true,
         },
         title:{
             type: String,
@@ -24,7 +24,7 @@ const postSchema = new Schema({
         },
         desc: {
             type: String,
-            maxlength: 200,
+            // maxlength: 200,
             required: true,
         },
         content:{
@@ -69,15 +69,6 @@ const postSchema = new Schema({
         publishedAt: {
             type: Date,
         },
-        isPublishedAt: { //for draf blog
-            type: Boolean,
-            default: false,
-        },
-        slug: {
-            type: String,
-            required: true,
-            unique: true,
-        },
         isFeatured: {
             type: Boolean,
             default: false,
@@ -86,6 +77,10 @@ const postSchema = new Schema({
             type: Number,
             default: 0,
         },
+        draft: {
+        type: Boolean,
+        default: false
+    },
 
 }, {
     timestamps: {
@@ -120,3 +115,12 @@ export default mongoose.model("Post", postSchema)
     //     type: String,
     //     required: true,
     // },
+      // blog_id: {
+        //     type: String,
+        //     required: true,
+        //     // unique: true,
+        // },
+        //  isPublishedAt: { //for draf blog
+        //     type: Boolean,
+        //     default: false,
+        // },
