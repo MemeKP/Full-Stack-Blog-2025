@@ -6,7 +6,29 @@ import axios from 'axios'
 import { useAuth } from '../context/authContext/userAuthContext'
 import { useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast';
-import { generateSlug } from '../utils/slugUtils'
+import { generateSlug } from '../utils/slugUtils';
+import { IKContext, IKUpload } from 'imagekitio-react'
+
+const authenticator = async () => {
+  try {
+    // Perform the request to the upload authentication endpoint.
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/posts/upload-auth`);
+    if (!response.ok) {
+      // If the server response is not successful, extract the error text for debugging.
+      const errorText = await response.text();
+      throw new Error(`Request failed with status ${response.status}: ${errorText}`);
+    }
+
+    // Parse and destructure the response JSON for upload credentials.
+    const data = await response.json();
+    const { signature, expire, token, publicKey } = data;
+    return { signature, expire, token, publicKey };
+  } catch (error) {
+    // Log the original error for debugging before rethrowing a new error.
+    console.error("Authentication error:", error);
+    throw new Error("Authentication request failed");
+  }
+};
 
 const Write = () => {
   const [title, setTitle] = useState('');
@@ -19,9 +41,12 @@ const Write = () => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [banner, setBanner] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const [slug, setSlug] = useState('test-slug');
   const [postId, setPostId] = useState(null);
+  const [cover, setCover] = useState(""); //ใช้กับ imageKit
+  const [progress, setProgress] = useState(0)
 
   // Redirect if not logged in
   useEffect(() => {
@@ -29,8 +54,6 @@ const Write = () => {
       navigate('/login')
     }
   }, [userLoggedIn, navigate])
-
-  // console.log(userLoggedIn._id); // undefined
 
   useEffect(() => {
     console.log("userLoggedIn: ", userLoggedIn);
@@ -119,58 +142,17 @@ const Write = () => {
         e.target.classList.remove("disable");
         toast.dismiss(loadingToast);
 
-        console.error("❌ Post publish error:", err); // เพิ่มบรรทัดนี้
+        console.error("Post publish error:", err);
         const message = err?.response?.data?.error || "Something went wrong.";
         return toast.error(message);
       });
 
   }
 
-  /* PUBLISH POST
-  const handlePublish = async (e) => {
-    e.preventDefault();
-
-    let finalSlug = slug;
-    if (!finalSlug || finalSlug === 'test-slug') {
-      finalSlug = generateSlug(title);
-      setSlug(finalSlug);
-    }
-
-    let localId = null;
-    const savedDraft = localStorage.getItem('draftPost');
-    if (savedDraft) {
-      try {
-        localId = JSON.parse(savedDraft)._id;
-        if (!postId && localId) {
-          setPostId(localId);
-        }
-      } catch (e) {
-        console.warn("❗ Error parsing draftPost:", e);
-      }
-    }
-
-    const data = {
-      _id: localId || postId,
-      title,
-      content,
-      isPublishedAt: true,
-      desc,
-      category,
-      tags,
-      slug: finalSlug,
-      author: currentUser?._id || '68416df480cba6d146f7b1e3',
-    };
-
-    console.log("🚀 Publishing:", data);
-    mutation.mutate(data);
-  };
-  */
-
-
   const mutation = useMutation({
     mutationFn: async (newPosts) => {
       const token = await getFirebaseToken();
-      console.log("✅ mutationFn received:", newPosts);
+      console.log("mutationFn received:", newPosts);
       // console.log("📬 mutationFn received _id:", newPosts._id);
       // console.log("Firebase Token:", token);
 
@@ -238,19 +220,40 @@ const Write = () => {
     localStorage.setItem('draftPost', JSON.stringify(draft))
   }, [title, desc, category, tags, content, slug, postId])
 
-  const handleBannerUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setBannerFile(file);
-      setBannerPreview(URL.createObjectURL(file));
-    }
+  // const handleBannerUpload = (e) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setBannerFile(file);
+  //     setBannerPreview(URL.createObjectURL(file));
+  //   }
+  // };
+
+  const onError = (err) => {
+    console.log(err)
+    toast.error("image uploade fail.")
+  }
+
+  // const onSuccess = (res) => {
+  //   console.log(res)
+  //   setCover(res);
+  // }
+
+  const onSuccess = (result) => {
+    setBannerPreview(result.url); // ใช้ url ของรูปจาก ImageKit
   };
+
+
+  const onUploadProgress = (progress) => {
+    console.log(progress)
+    setProgress(Math.round((progress.loaded / progress.total) * 100))
+  }
 
   return (
     <>
       <Toaster position='top-center' />
       <AnimationWrapper>
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 min-h-screen">
+
           {/* BANNER */}
           <div className='w-full relative group'>
             {bannerPreview ? (
@@ -261,25 +264,33 @@ const Write = () => {
               />
             ) : (
               <div
-                onClick={() => document.getElementById('bannerUpload')?.click()}
+                onClick={() => document.getElementById('ik-upload-hidden')?.click()}
                 className="w-full h-[250px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-2xl text-gray-400 cursor-pointer hover:bg-gray-50 transition"
               >
-
-                Click or drag an image to upload cover
+                Click to upload image cover
               </div>
             )}
 
-            {/* Hidden File Input */}
-            <input
-              type='file'
-              id='bannerUpload'
-              accept='image/*'
-              onChange={handleBannerUpload}
-              className='hidden'
-            />
+            {/* Hidden ImageKit Upload */}
+            <IKContext
+              publicKey={import.meta.env.VITE_IMAGEKIT_PUBLICKEY}
+              urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
+              authenticator={authenticator}
+            >
+              <IKUpload
+                id="ik-upload-hidden"
+                className="hidden"
+                useUniqueFileName
+                onError={onError}
+                onSuccess={onSuccess}
+                onUploadProgress={onUploadProgress}
+              />
+            </IKContext>
+
+            {/* Change Cover Button */}
             {bannerPreview && (
               <button
-                onClick={() => document.getElementById('bannerUpload')?.click()}
+                onClick={() => document.getElementById('ik-upload-hidden')?.click()}
                 className="absolute top-4 right-4 bg-white/70 text-gray-800 px-4 py-1 rounded-full text-sm shadow hover:bg-white transition"
               >
                 Change Cover
@@ -369,6 +380,13 @@ const Write = () => {
           </div>
         </main>
 
+        {/* Error Message */}
+        {/* {mutation.isError && (
+          <div className="text-red-600 text-sm font-medium px-2">
+            {mutation.error.message}
+          </div>
+        )} */}
+
         {/* PUBLISH & SAVE */}
         <div className="sticky bottom-4 flex justify-end max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <button
@@ -390,3 +408,44 @@ const Write = () => {
 }
 
 export default Write
+
+
+/* PUBLISH POST
+const handlePublish = async (e) => {
+  e.preventDefault();
+
+  let finalSlug = slug;
+  if (!finalSlug || finalSlug === 'test-slug') {
+    finalSlug = generateSlug(title);
+    setSlug(finalSlug);
+  }
+
+  let localId = null;
+  const savedDraft = localStorage.getItem('draftPost');
+  if (savedDraft) {
+    try {
+      localId = JSON.parse(savedDraft)._id;
+      if (!postId && localId) {
+        setPostId(localId);
+      }
+    } catch (e) {
+      console.warn("❗ Error parsing draftPost:", e);
+    }
+  }
+
+  const data = {
+    _id: localId || postId,
+    title,
+    content,
+    isPublishedAt: true,
+    desc,
+    category,
+    tags,
+    slug: finalSlug,
+    author: currentUser?._id || '68416df480cba6d146f7b1e3',
+  };
+
+  console.log("🚀 Publishing:", data);
+  mutation.mutate(data);
+};
+*/
