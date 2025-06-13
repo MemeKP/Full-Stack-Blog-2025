@@ -3,26 +3,36 @@ import Post from "../models/post.model.js"
 import User from "../models/user.model.js"
 import slugify from "slugify"
 
-//generate unique slug -> no need
-const generateUniqueSlug = async (title, desiredSlug = null) => {
-    const baseSlug = desiredSlug
-        ? slugify(desiredSlug, { lower: true, strict: true })
-        : slugify(title, { lower: true, strict: true });
+// //generate unique slug -> no need
+// const generateUniqueSlug = async (title, desiredSlug = null) => {
+//     const baseSlug = desiredSlug
+//         ? slugify(desiredSlug, { lower: true, strict: true })
+//         : slugify(title, { lower: true, strict: true });
 
-    let slug = baseSlug;
-    let counter = 2;
+//     let slug = baseSlug;
+//     let counter = 2;
 
-    while (await Post.findOne({ slug })) {
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-    }
+//     while (await Post.findOne({ slug })) {
+//         slug = `${baseSlug}-${counter}`;
+//         counter++;
+//     }
 
-    return slug;
-};
+//     return slug;
+// };
 
 export const getPosts = async (req, res) => {
+  /*เพิ่ม page, limit เพื่อทำ infinite scroll */
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 2
+
     const posts = await Post.find()
-    res.status(200).json(posts)
+      .limit(limit)
+      .skip((page-1)*limit) //1st page จะเป็น 0 ก็จะโชว์โพสต์ตาม limit (5) และเมื่อ 2nd -> 2-1*5 = 5 (skip first 5 and show the next 5)
+    
+      const totalPosts = await Post.countDocuments();
+      const hasMore = page*limit < totalPosts
+    
+      res.status(200).json({posts, hasMore})
 
 }
 

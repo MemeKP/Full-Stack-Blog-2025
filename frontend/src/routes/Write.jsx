@@ -124,6 +124,10 @@ const Write = () => {
 
     const token = await getFirebaseToken();
 
+    console.log("banner right before submit:", banner);
+    console.log("posting to:", import.meta.env.VITE_API_URL + "/posts")
+    console.log("banner length", banner?.length || banner?.size);
+
     axios.post(import.meta.env.VITE_API_URL + "/posts",
       blogObj, {
       headers: {
@@ -153,7 +157,7 @@ const Write = () => {
     mutationFn: async (newPosts) => {
       const token = await getFirebaseToken();
       console.log("mutationFn received:", newPosts);
-      // console.log("📬 mutationFn received _id:", newPosts._id);
+      // console.log("mutationFn received _id:", newPosts._id);
       // console.log("Firebase Token:", token);
 
       const url = newPosts._id
@@ -177,7 +181,7 @@ const Write = () => {
 
       // บันทึก _id ที่ได้กลับมาจาก backend
       if (!postId && res._id) {
-        console.log("✅ Set postId from response:", res._id);
+        console.log("Set postId from response:", res._id);
 
         // อัปเดตลง localStorage ทันทีด้วย
         const savedDraft = localStorage.getItem('draftPost');
@@ -220,28 +224,15 @@ const Write = () => {
     localStorage.setItem('draftPost', JSON.stringify(draft))
   }, [title, desc, category, tags, content, slug, postId])
 
-  // const handleBannerUpload = (e) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     setBannerFile(file);
-  //     setBannerPreview(URL.createObjectURL(file));
-  //   }
-  // };
-
   const onError = (err) => {
     console.log(err)
     toast.error("image uploade fail.")
   }
 
-  // const onSuccess = (res) => {
-  //   console.log(res)
-  //   setCover(res);
-  // }
-
   const onSuccess = (result) => {
+    setBanner(result.url);
     setBannerPreview(result.url); // ใช้ url ของรูปจาก ImageKit
   };
-
 
   const onUploadProgress = (progress) => {
     console.log(progress)
