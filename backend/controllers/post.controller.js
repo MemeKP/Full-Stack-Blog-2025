@@ -26,6 +26,8 @@ export const getPosts = async (req, res) => {
   const limit = parseInt(req.query.limit) || 2
 
     const posts = await Post.find()
+    //Show author of the blog
+      .populate("author", "username")
       .limit(limit)
       .skip((page-1)*limit) //1st page จะเป็น 0 ก็จะโชว์โพสต์ตาม limit (5) และเมื่อ 2nd -> 2-1*5 = 5 (skip first 5 and show the next 5)
     
@@ -36,8 +38,12 @@ export const getPosts = async (req, res) => {
 
 }
 
+// export const getPost = async (req, res) => {
+//     const post = await Post.findOne({ slug: req.params.slug }).populate("author", "username")
+//     res.status(200).json(post)
+// }
 export const getPost = async (req, res) => {
-    const post = await Post.findOne({ slug: req.params.slug })
+    const post = await Post.findOne({ blog_id: req.params.blog_id }).populate("author", "username")
     res.status(200).json(post)
 }
 

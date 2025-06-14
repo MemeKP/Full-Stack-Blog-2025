@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom"
-import IKImageWrapper from "./IKImageWrapper"
+import { Link, useParams } from "react-router-dom"
 import { format } from "timeago.js"
 import { useState } from "react"
 
@@ -22,22 +21,29 @@ const PostListItem = ({ post }) => {
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgLoaded(true)} // กันภาพพังแล้ว skeleton ไม่หาย
           />
-          </div>
-        )}
+        </div>
+      )}
 
       {/* details */}
       <div className="flex flex-col gap-3 xl:w-2/3">
         <Link
-          to='/test'
+          to={`${post.blog_id}`}
           className="text-4xl xl:text-3xl font-semibold leading-snug line-clamp-1"
         >
           {post.title}
         </Link>
-        <div>
+        <div className="flex flex-wrap gap-2">
           <span>Written By </span>
-          <Link className="text-cyan-600 hover:underline">kageyama tobio</Link>
+          {post.author && post.author.username ? (
+            <Link className="text-cyan-600 hover:underline">
+              {post.author.username}
+            </Link>
+          ) : (
+            <span className="italic text-gray-400">Unknown author</span>
+          )}
+
           <span> on </span>
-          <Link className="text-cyan-600 hover:underline">Web Design </Link>
+          <Link className="text-cyan-600 hover:underline">{post.category}</Link>
           <span>{format(post.publishedAt)}</span>
         </div>
         <p>

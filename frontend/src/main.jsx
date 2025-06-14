@@ -32,8 +32,12 @@ const router = createBrowserRouter([
         path: "/",
         element: <Homepage />,
       },
+      // {
+      //   path: "/:slug",
+      //   element: <SinglePostPage/>,
+      // },
       {
-        path: "/:slug",
+        path: "/:blog_id",
         element: <SinglePostPage/>,
       },
       {

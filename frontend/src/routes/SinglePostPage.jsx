@@ -1,6 +1,6 @@
 import { GoHeartFill } from "react-icons/go";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import IKImageWrapper from "../components/IKImageWrapper";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { PiHandsClappingDuotone } from "react-icons/pi";
@@ -8,8 +8,32 @@ import { FaFaceGrinHearts, FaFaceSadCry, FaFaceSurprise, FaFire } from "react-ic
 import { IoBookmarksOutline, IoShareOutline } from "react-icons/io5";
 import CommentSection from "../components/CommentSection";
 import { post_tags } from "../config/category";
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
+
+//Fetch blog page
+const fetchPost = async (blog_id) => {
+  const res = axios.get(`${import.meta.env.VITE_API_URL}/posts/${blog_id}`);
+  return (await res).data;
+}
 
 const SinglePostPage = () => {
+   const {blog_id} = useParams()
+    const { isPending, error, data} = useQuery({
+      queryKey:["post", blog_id],
+      queryFn: () => fetchPost(blog_id),
+    });
+    
+    if (isPending) {
+      return "Loading..."
+    }
+    if (error) {
+      return "Something went wrong... " + error.message;
+    }
+    if (!data) {
+      return "Post not found!"
+    }
+
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
       {/* META */}
@@ -20,7 +44,8 @@ const SinglePostPage = () => {
         </div>
 
         {/* TITLE */}
-        <h1 className="text-7xl font-extrabold text-center leading-tight bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent mb-4">Can AI See Beauty</h1>
+        {/* Can AI See Beauty */}
+        <h1 className="text-7xl font-extrabold text-center leading-tight bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent mb-4">{data.title}</h1> 
 
         {/* VIEW & LIKES */}
         <div className="flex items-center justify-center gap-6">
