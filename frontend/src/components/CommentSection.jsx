@@ -1,8 +1,52 @@
 import React, { useState } from "react"
 import Comment from "./Comment"
-import IKImageWrapper from "./IKImageWrapper";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from "../context/authContext/userAuthContext";
+import toast, { Toaster } from 'react-hot-toast';
+
+//Fetch blog page
+const fetchComments = async (blog_id) => {
+    const res = axios.get(`${import.meta.env.VITE_API_URL}/comments/${blog_id}`);
+    return (await res).data;
+}
 
 const CommentSection = () => {
+    const { userLoggedIn, getFirebaseToken, currentUser } = useAuth();
+    const [isLikedByUser, setIsLikedByUser] = useState(false)
+    const [commentWrapper, setCommentWrapper] = useState(true)
+    const [totalParentComment, setTotalParentComment] = useState(0)
+    const navigate = useNavigate();
+    const [newComment, setNewComment] = useState("");
+
+      // Redirect if not logged in
+    useEffect(() => {
+        if (!userLoggedIn) {
+            navigate('/login')
+        }
+    }, [userLoggedIn, navigate])
+
+    useEffect(() => {
+        console.log("userLoggedIn: ", userLoggedIn);
+
+    }, [userLoggedIn]);
+
+    // const { isPending, error, data } = useQuery({
+    //     queryKey: ["comment", postId],
+    //     queryFn: () => fetchComments(blog_id),
+    // });
+
+    // if (isPending) {
+    //     return "Loading..."
+    // }
+    // if (error) {
+    //     return "Something went wrong... " + error.message;
+    // }
+    // if (!data) {
+    //     return "Post not found!"
+    // }
     const [comments, setComments] = useState([
         {
             id: 1,
@@ -42,25 +86,32 @@ const CommentSection = () => {
         },
     ])
 
-    const [newComment, setNewComment] = useState("");
-
     const handlePost = () => {
-        if (newComment.trim() === "") return;
-        const newEntry = {
-            id: comments.length + 1,
-            profile: {
-                name: "Anonymous",
-                avatar: "post2.jpg",
-                userId: "anonymous"
-            },
-            date: "Just Now",
-            content: newComment,
-            Likes: 0,
-            replies: [],
-        };
-        setComments([...comments, newEntry]);
-        setNewComment("");
+        if(!getFirebaseToken){
+            return toast.error("Please login first to leave a comment")
+        }
+        if (!newComment.length) {
+            return toast.error("Write something to leave a comment...")
+        }
     }
+
+    // const handlePost = () => {
+    //     if (newComment.trim() === "") return;
+    //     const newEntry = {
+    //         id: comments.length + 1,
+    //         profile: {
+    //             name: "Anonymous",
+    //             avatar: "post2.jpg",
+    //             userId: "anonymous"
+    //         },
+    //         date: "Just Now",
+    //         content: newComment,
+    //         Likes: 0,
+    //         replies: [],
+    //     };
+    //     setComments([...comments, newEntry]);
+    //     setNewComment("");
+    // }
 
     return (
         <div className="w-full mx-auto">

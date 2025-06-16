@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom"
-import { format } from "timeago.js"
+import { format as formatDate } from 'date-fns';
 import { useState } from "react"
 
 const PostListItem = ({ post }) => {
@@ -44,7 +44,7 @@ const PostListItem = ({ post }) => {
 
           <span> on </span>
           <Link className="text-cyan-600 hover:underline">{post.category}</Link>
-          <span>{format(post.publishedAt)}</span>
+          <span>{formatDate(Date(post.publishedAt), "MMMM, d yyyy")}</span>
         </div>
         <p>
           {post.desc}

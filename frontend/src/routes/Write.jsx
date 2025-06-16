@@ -83,7 +83,7 @@ const Write = () => {
       _id: savedId,
       title,
       content,
-      isPublishedAt: false,
+      isPublishedAt: false, //publishedAt
       desc,
       category,
       tags,
