@@ -31,6 +31,10 @@ const commentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Comment'
     },
+    idDeleted: { // soft delete
+        type: Boolean,
+        default: false,
+    }
 }, {
     timestamps: {
         createdAt: 'commentedAt', //true

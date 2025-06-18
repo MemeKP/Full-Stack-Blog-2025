@@ -6,6 +6,6 @@ const router = express.Router()
 
 router.get("/:postId", getPostComments)
 router.post("/:postId", verifyFirebaseToken, addComment)
-router.delete("/:id", deleteComment)
+router.delete("/:id", verifyFirebaseToken, deleteComment)
 
 export default router

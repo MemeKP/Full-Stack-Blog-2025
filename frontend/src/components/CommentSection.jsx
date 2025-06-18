@@ -54,10 +54,8 @@ const CommentSection = ({ postId, authorName }) => { //authorName
     const { isPending, error, data } = useQuery({
         queryKey: ["comments", postId],
         queryFn: () => fetchComments(postId),
-        enabled: !!postId
+        // enabled: !!postId
     });
-    if (isPending) return "Loading..."
-    if (error) return "Something went wrong... " + error.message;
 
     const handlePost = (e) => {
         e.preventDefault();
@@ -86,7 +84,7 @@ const CommentSection = ({ postId, authorName }) => { //authorName
     return (
         <div className="w-full mx-auto">
             <form onSubmit={handlePost} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4">Responses ({data.length})</h2>
+                <h2 className="text-2xl font-semibold mb-4">{isPending ? "Loading..." : error ? "Error" : `Responses(${data.length})`}</h2>
                 {/* FORM INPUT */}
                 <div className="mb-4">
                     <textarea
@@ -111,8 +109,8 @@ const CommentSection = ({ postId, authorName }) => { //authorName
 
             {/* COMMENT LIST */}
             <div className="mt-8 space-y-6">
-                {(data ?? []).map((comment) => (
-                    <Comment key={comment._id} comment={comment} />
+                {isPending ? "Loading..." : error ? "Error loading comment." : (data ?? []).map((comment) => (
+                    <Comment key={comment._id} comment={comment} postId={postId}/>
                 ))}
             </div>
         </div>

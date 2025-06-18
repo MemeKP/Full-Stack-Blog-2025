@@ -22,6 +22,7 @@ const fetchPost = async (blog_id) => {
 const SinglePostPage = () => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const { blog_id } = useParams()
+  const [isLikedByUser, setIsLikedByUser ] = useState(false)
 
   const { isPending, error, data } = useQuery({
     queryKey: ["post", blog_id],

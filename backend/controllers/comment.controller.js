@@ -16,8 +16,8 @@ export const getPostComments = async (req, res) => {
             //         select: "username profile_img"
             //     }
             // })
-            .sort({ createdAt: -1 }) // lastest comment ขึ้นก่อน
-            // .lean() //ใช้ lean() ไม่ได้ รูปจะไม่ขึ้น
+            .sort({ commentedAt: -1 }) // lastest comment ขึ้นก่อน
+        // .lean() //ใช้ lean() ไม่ได้ รูปจะไม่ขึ้น
 
         res.status(200).json(comments)
     } catch (error) {
@@ -27,25 +27,76 @@ export const getPostComments = async (req, res) => {
 }
 
 export const deleteComment = async (req, res) => {
-    const firebaseUser = req.user;
-    const firebaseUid = firebaseUser.uid;
+    const { id } = req.params; //id คือ commentId
+    console.log("DELETE HIT", id);
+    try {
+        const firebaseUser = req.user;
+        const firebaseUid = firebaseUser.uid;
 
-    const user = await User.findOne({ uid: firebaseUid })
-    if (!firebaseUid) {
-        return res.status(401).json({ error: "User not found or Not authenticated" });
+        if (!firebaseUid) {
+            return res.status(401).json({ error: "User not authenticated" });
+        }
+
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const deletedComment = await Comment.findOneAndDelete({
+            _id: id, //id อันนี้คือ commentId
+            comment_by: user._id,  
+        });
+
+        if (!deletedComment) {
+            return res.status(403).json("You can only delete your own comment!");
+        }
+
+        res.status(200).json("Comment deleted!");
+    } catch (err) {
+        console.error("Delete comment failed:", err);
+        res.status(500).json({ error: "Failed to delete comment" });
     }
+};
 
-    const deletedComment = await Comment.findOneAndDelete({
-        _id: id,
-        user: user._id,
-    })
 
-    if (!deletedComment) {
-        return res.status(403).json("You acn only your comment!")
-    }
+// export const deleteComment = async (req, res) => {
+//     const firebaseUser = req.user;
+//     const firebaseUid = firebaseUser.uid;
 
-    res.status(200).json("comment deleted!")
-}
+//     const user = await User.findOne({ uid: firebaseUid })
+//     if (!user) {
+//         return res.status(401).json({ error: "User not found in database" });
+//     }
+//     if (!firebaseUid) {
+//         return res.status(401).json({ error: "User not found or Not authenticated" });
+//     }
+
+//     const commentId = req.params.commentId; //
+//     const deletedComment = await Comment.findById(commentId)
+//     if (!deletedComment) {
+//         return res.status(404).josn({error: "Comment not found!"})
+//     }
+
+//     if (deletedComment.comment_by.toString() !== user._id.toString()) {
+//         return res.status(403).json({error: "You acn only your comment!"})
+//     }
+
+//     //Soft delete
+//     deleteComment.isDeleted = true
+//     deleteComment.content = "[deleted]"
+//     await deleteComment.save()
+
+//     // const deletedComment = await Comment.findOneAndDelete({
+//     //     _id: id,
+//     //     user: user._id,
+//     // })
+
+//     // if (!deletedComment) {
+//     //     return res.status(403).json("You acn only your comment!")
+//     // }
+
+//     res.status(200).json("comment deleted!")
+// }
 
 export const addComment = async (req, res) => {
     const firebaseUser = req.user; // จาก verifyFirebaseToken
