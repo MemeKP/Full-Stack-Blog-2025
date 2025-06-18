@@ -9,7 +9,7 @@ const commentSchema = new Schema({
     blog_author:{
         type: String,
         required: true,
-        ref: "Post",
+        ref: "User", // Post
     },
     comment:{
         type: String,

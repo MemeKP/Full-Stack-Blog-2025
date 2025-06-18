@@ -118,7 +118,7 @@ const SinglePostPage = () => {
       <div className="relative mt-6 border-t pt-6">
         <div className="flex flex-row md:flex-row gap-4">
           <div className="flex-1">
-            <CommentSection />
+            <CommentSection postId={data._id} authorName={data.author.username} />
           </div>
           <div className="flex-none">
             <IoShareOutline className="absolute right-0 cursor-pointer hover:text-black duration-200  text-gray-600 text-3xl" />
