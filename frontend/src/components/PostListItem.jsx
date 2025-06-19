@@ -39,7 +39,7 @@ const PostListItem = ({ post }) => {
               {post.author.username}
             </Link>
           ) : (
-            <span className="italic text-gray-400">Unknown author</span>
+            <span className="italic text-gray-400">anonymous</span>
           )}
 
           <span> on </span>

@@ -34,3 +34,65 @@ export const createOrUpdateUser = async (req, res) => {
         res.status(500).json({ message: "Error saving user to DB" });
     }
 };
+
+export const getUserSavedPosts = async (req, res) => {
+  try {
+    const firebaseUser = req.user;
+    const firebaseUid = firebaseUser.uid;
+
+    if (!firebaseUid) {
+      return res.status(401).json("User not authenticated!");
+    }
+
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) {
+      return res.status(401).json({ error: "User not found!" });
+    }
+
+    console.log("✅ Found user:", user.username, "savedPosts:", user.savedPosts);
+    res.status(200).json(user.savedPosts);
+  } catch (err) {
+    console.error("🔥 Error in getUserSavedPosts:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+export const SavePosts = async (req, res) => {
+    try {
+        const firebaseUser = req.user;
+        if (!firebaseUser) {
+            return res.status(401).json("User not authenticated!");
+        }
+
+        const firebaseUid = firebaseUser.uid;
+        const postId = req.body.postId;
+
+        if (!postId) {
+            return res.status(400).json("No postId provided.");
+        }
+
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) {
+            return res.status(404).json("User not found.");
+        }
+
+        const isSaved = user.savedPosts.some((p) => p === postId);
+
+        if (!isSaved) {
+            await User.findByIdAndUpdate(user._id, {
+                $push: { savedPosts: postId }
+            });
+        } else {
+            await User.findByIdAndUpdate(user._id, {
+                $pull: { savedPosts: postId }
+            });
+        }
+
+        res.status(200).json(isSaved ? "Post unsaved" : "Post saved");
+    } catch (err) {
+        console.error("SavePosts Error:", err);
+        res.status(500).json("Internal Server Error");
+    }
+};
+

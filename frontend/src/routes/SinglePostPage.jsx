@@ -1,17 +1,16 @@
-import { GoHeartFill } from "react-icons/go";
-import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { Link, useParams } from "react-router-dom";
 import IKImageWrapper from "../components/IKImageWrapper";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { format as formatDate } from 'date-fns';
 import { PiHandsClappingDuotone } from "react-icons/pi";
 import { FaFaceGrinHearts, FaFaceSadCry, FaFaceSurprise, FaFire } from "react-icons/fa6";
-import { IoBookmarksOutline, IoShareOutline } from "react-icons/io5";
+import { IoShareOutline } from "react-icons/io5";
 import CommentSection from "../components/CommentSection";
 import { post_tags } from "../config/category";
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useState } from "react";
+import PostMenuActions from "../components/PostMenuActions";
 
 //Fetch blog page
 const fetchPost = async (blog_id) => {
@@ -22,7 +21,7 @@ const fetchPost = async (blog_id) => {
 const SinglePostPage = () => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const { blog_id } = useParams()
-  const [isLikedByUser, setIsLikedByUser ] = useState(false)
+  const [isLikedByUser, setIsLikedByUser] = useState(false)
 
   const { isPending, error, data } = useQuery({
     queryKey: ["post", blog_id],
@@ -55,19 +54,13 @@ const SinglePostPage = () => {
         <h1 className="text-7xl font-extrabold text-center leading-tight bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent mb-4">{data.title}</h1>
 
         {/* VIEW & LIKES */}
-        <div className="flex items-center justify-center gap-6 ">
-          <span className="flex items-center">
-            <MdOutlineRemoveRedEye className="text-2xl text-gray-500 gap-1" />
-            <span className="px-2 text-gray-600">1001</span>
-          </span>
-          <span className="flex items-center">
-            <GoHeartFill className="text-2xl text-red-500 cursor-pointer hover:scale-110 transition-transform" />
-            <span className="px-2 text-gray-600">218</span>
-          </span>
-          <span>
-            <IoBookmarksOutline className="text-xl text-gray-600 cursor-pointer hover:scale-110 transition-transform" />
-          </span>
-        </div>
+        {isPending ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div>Error loading post</div>
+        ) : (
+          <PostMenuActions post={data} />
+        )}
       </div>
 
       {/* ARTICLE BODY */}
@@ -85,11 +78,11 @@ const SinglePostPage = () => {
             alt="post image"
             className="w-full max-h-[450px] object-cover rounded-2xl shadow-md my-8"
           />
-          }
+        }
 
         <article className="prose prose-lg max-w-none mt-10">
-          <div dangerouslySetInnerHTML={{__html:data.content}}/>
-          
+          <div dangerouslySetInnerHTML={{ __html: data.content }} />
+
         </article>
 
         <section className="relative group mb-4 flex flex-col ">
@@ -132,9 +125,9 @@ const SinglePostPage = () => {
 
 export default SinglePostPage
 
-{/* EMOJI REACTION */}
-      {/* จะเอาใส่กับ foalting comment */}
-      {/* <div className="mt-16 border-t pt-6 flex items-center gap-4 text-xl">
+{/* EMOJI REACTION */ }
+{/* จะเอาใส่กับ foalting comment */ }
+{/* <div className="mt-16 border-t pt-6 flex items-center gap-4 text-xl">
         <LuMessageSquareMore /> :
         <span className="cursor-pointer hover:scale-110 transition-transform"><FaFaceGrinHearts/></span>
         <span className="cursor-pointer hover:scale-110 transition-transform"><FaFaceSadCry /></span>
@@ -144,14 +137,14 @@ export default SinglePostPage
       </div>       */}
 
 // CONTENT 
-    {/* <section className="relative group mb-4 flex flex-col py-4">
+{/* <section className="relative group mb-4 flex flex-col py-4">
           <h1 className="text-2xl font-semibold">First Header</h1>
           <p className="text-lg leading-relaxed text-justify">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore exercitationem iusto similique saepe minus a consequatur debitis quas molestias. Illum totam molestiae similique consequatur modi adipisci omnis, praesentium provident officiis?
             Lore facilmaiores possimus vel?
             Lorem ipsuit. Esse consequuntur blanditiis dolore perferendis eius error, corporis dicta eum voluptates possimus placeat mollitia oluptatum optio deserunt? Aliquid illum sunt repudiandae debitis soluta, aperiam assumenda molestiae. Quasi, accusamus. Commodi sit fugit facere, aperiam nisi dolorem quis neque. Laborum nesciunt, aut quam ratione ducimus aliquid nisi necessitatibus inventore, error voluptatibus soluta nihil cupiditate molestias delectus optio in quo consequuntur a. Necessitatibus incidunt, harum quasi praesentium itaque dolorum debitis ut pariatur veritatis?
           </p> */}
-          {/* FLOATING COMMENT */}
-          {/* <button className="absolute top-0 right-0">
+{/* FLOATING COMMENT */ }
+{/* <button className="absolute top-0 right-0">
             <LuMessageSquareMore className="text-3xl text-gray-400 hover:text-black duration-200" />
           </button>
         </section> */}

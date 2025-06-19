@@ -33,7 +33,7 @@ const SearchBar = ( ) => {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+    document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 

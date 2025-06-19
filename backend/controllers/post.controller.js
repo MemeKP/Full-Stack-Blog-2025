@@ -3,38 +3,21 @@ import Post from "../models/post.model.js"
 import User from "../models/user.model.js"
 import slugify from "slugify"
 
-// //generate unique slug -> no need
-// const generateUniqueSlug = async (title, desiredSlug = null) => {
-//     const baseSlug = desiredSlug
-//         ? slugify(desiredSlug, { lower: true, strict: true })
-//         : slugify(title, { lower: true, strict: true });
-
-//     let slug = baseSlug;
-//     let counter = 2;
-
-//     while (await Post.findOne({ slug })) {
-//         slug = `${baseSlug}-${counter}`;
-//         counter++;
-//     }
-
-//     return slug;
-// };
-
 export const getPosts = async (req, res) => {
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
   const page = parseInt(req.query.page) || 1
   const limit = parseInt(req.query.limit) || 2
 
-    const posts = await Post.find()
+  const posts = await Post.find()
     //Show author of the blog
-      .populate("author", "username")
-      .limit(limit)
-      .skip((page-1)*limit) //1st page จะเป็น 0 ก็จะโชว์โพสต์ตาม limit (5) และเมื่อ 2nd -> 2-1*5 = 5 (skip first 5 and show the next 5)
-    
-      const totalPosts = await Post.countDocuments();
-      const hasMore = page*limit < totalPosts
-    
-      res.status(200).json({posts, hasMore})
+    .populate("author", "username")
+    .limit(limit)
+    .skip((page - 1) * limit) //1st page จะเป็น 0 ก็จะโชว์โพสต์ตาม limit (5) และเมื่อ 2nd -> 2-1*5 = 5 (skip first 5 and show the next 5)
+
+  const totalPosts = await Post.countDocuments();
+  const hasMore = page * limit < totalPosts
+
+  res.status(200).json({ posts, hasMore })
 
 }
 
@@ -43,8 +26,8 @@ export const getPosts = async (req, res) => {
 //     res.status(200).json(post)
 // }
 export const getPost = async (req, res) => {
-    const post = await Post.findOne({ blog_id: req.params.blog_id }).populate("author", "username")
-    res.status(200).json(post)
+  const post = await Post.findOne({ blog_id: req.params.blog_id }).populate("author", "username")
+  res.status(200).json(post)
 }
 
 export const createPost = async (req, res) => {
@@ -99,34 +82,78 @@ export const createPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-    console.log("✏️ [UPDATE POST] postId:", req.params.id);
-    console.log("✏️ [UPDATE POST] body:", req.body);
+  console.log("✏️ [UPDATE POST] postId:", req.params.id);
+  console.log("✏️ [UPDATE POST] body:", req.body);
 
-    try {
-        const { title, slug, ...rest } = req.body;
+  try {
+    const { title, slug, ...rest } = req.body;
 
-        let finalSlug = slug;
-        if (!finalSlug || finalSlug === 'null') {
-            finalSlug = await generateUniqueSlug(title || "untitled");
-        }
-        const updatePost = await Post.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true } //return update doc
-        )
-        res.status(200).json(updatePost)
-    } catch (err) {
-        res.status(500).json({ error: "Failed to update post" })
+    let finalSlug = slug;
+    if (!finalSlug || finalSlug === 'null') {
+      finalSlug = await generateUniqueSlug(title || "untitled");
     }
+    const updatePost = await Post.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true } //return update doc
+    )
+    res.status(200).json(updatePost)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update post" })
+  }
 }
 
 export const deletePost = async (req, res) => {
-    const post = await Post.findByIdAndDelete(req.params.id);
-    res.status(200).json("post has been delete")
+  try {
+    const firebaseUser = req.user;
+    const firebaseUid = firebaseUser?.uid;
+
+    if (!firebaseUid) {
+      return res.status(401).json("User not authenticated!");
+    }
+
+    const role = req.auth?.sessionClaims?.metadata?.role || "user"; // ของระบบ admin auth มาจาก useUser()
+
+    if (role === "admin") {
+      await Post.findByIdAndDelete(req.params.id);
+      return res.status(200).json("Post has been deleted");
+    }
+
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) return res.status(401).json("User not found!");
+
+    console.log("Target user id", user._id);
+    const post = await Post.findOne({ blog_id: req.params.id });
+    console.log("Post user", post?.author);
+    console.log("Post found by blog_id:", post);
+
+    if (!post) return res.status(404).json("Post not found");
+
+    if (post.author.toString() !== user._id.toString()) {
+  return res.status(403).json("You can delete only your posts!");
 }
 
+    const deletedPost = await Post.findOneAndDelete({
+      blog_id: req.params.id,    
+      author: user._id
+    });
+
+    await Post.deleteOne({ blog_id: req.params.id });
+
+    if (!deletedPost) {
+      return res.status(403).json("You can delete only your posts!");
+    }
+
+    res.status(200).json("Post has been deleted");
+  } catch (error) {
+    console.error("Delete Post Error:", error);  
+    res.status(500).json("Internal server error");
+  }
+};
+
+
 const imagekit = new ImageKit({
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT, 
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY
 })
@@ -134,6 +161,23 @@ export const uploadAuth = async (req, res) => {
   const result = imagekit.getAuthenticationParameters();
   res.send(result);
 }
+
+// //generate unique slug -> no need
+// const generateUniqueSlug = async (title, desiredSlug = null) => {
+//     const baseSlug = desiredSlug
+//         ? slugify(desiredSlug, { lower: true, strict: true })
+//         : slugify(title, { lower: true, strict: true });
+
+//     let slug = baseSlug;
+//     let counter = 2;
+
+//     while (await Post.findOne({ slug })) {
+//         slug = `${baseSlug}-${counter}`;
+//         counter++;
+//     }
+
+//     return slug;
+// };
 
 // export const createPost = async (req, res) => {
 //     // let authorId = req.user;

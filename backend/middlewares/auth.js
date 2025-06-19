@@ -14,7 +14,8 @@ export const verifyFirebaseToken = async (req, res, next) => {
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     console.log('Decoded Token:', decodedToken);
-    req.user = decodedToken;
+    req.user = decodedToken; // ให้ใช้ req.user.uid
+    req.auth = decodedToken; // ให้ใช้ req.auth.sessionClaims
     next();
   } catch (error) {
     console.error("Firebase token verify failed", error);

@@ -10,7 +10,7 @@ router.get("/", getPosts);
 // router.get("/:slug", getPosts)
 router.get("/:blog_id", getPost)
 router.post("/", verifyFirebaseToken, createPost);
-router.delete("/:id", deletePost);
+router.delete("/:id", verifyFirebaseToken, deletePost);
 router.put('/:id', updatePost)
 
 export default router
