@@ -9,118 +9,88 @@ import mongoose, { Schema } from "mongoose";
 * - Bookmark/Reaction/Comment (อ้างอิงกับ Post._id) *maybe later*
 */
 const postSchema = new Schema({
-       blog_id: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        title:{
-            type: String,
-            required: true,
-        }, 
-        banner:{
-            type: String,
-            // required: true,
-        },
-        desc: {
-            type: String,
-            // maxlength: 200,
-            required: true,
-        },
-        content:{
-            type: String, //[]
-            required: true,
-        },
-        category: {
-            type: String,
-            default: "general",
-        },
-        tags: {
-            type: [String],
-            // required: true,
-        },
-        author: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: "User"
-        },
-        activity: {
-            total_likes: {
-                type: Number,
-                default: 0,
-            },
-            total_comments: {
-                type: Number,
-                default: 0,
-            },
-            total_reads: {
-                type: Number,
-                default: 0,
-            },
-            total_parent_comments: {
-                type: Number,
-                default: 0,
-            },
-        },
-        comments: {
-            type: [Schema.Types.ObjectId],
-            ref: "Comment"
-        },
-        publishedAt: {
-            type: Date,
-        },
-        isFeatured: {
-            type: Boolean,
-            default: false,
-        },
-        visit: {
+    blog_id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    banner: {
+        type: String,
+        // required: true,
+    },
+    desc: {
+        type: String,
+        // maxlength: 200,
+        required: true,
+    },
+    content: {
+        type: String, //[]
+        required: true,
+    },
+    category: {
+        type: String,
+        default: "general",
+    },
+    tags: {
+        type: [String],
+        // required: true,
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: "User"
+    },
+    activity: {
+        total_likes: {
             type: Number,
             default: 0,
         },
-        draft: {
+        total_comments: {
+            type: Number,
+            default: 0,
+        },
+        total_reads: {
+            type: Number,
+            default: 0,
+        },
+        total_parent_comments: {
+            type: Number,
+            default: 0,
+        },
+    },
+    likedBy: {
+        type: [String], // เก็บ uid จาก firebase ให้ user แต่ละคน สามารถ like/unlike ได้ 1 ครั้งเท่านั้น
+        default: []
+    },
+    comments: {
+        type: [Schema.Types.ObjectId],
+        ref: "Comment"
+    },
+    publishedAt: {
+        type: Date,
+    },
+    isFeatured: {
+        type: Boolean,
+        default: false,
+    },
+    visit: {
+        type: Number,
+        default: 0,
+    },
+    draft: {
         type: Boolean,
         default: false
     },
 
 }, {
     timestamps: {
-        createdAt: 'publishedAt', 
+        createdAt: 'publishedAt',
         // createdAt: true, 
     }
 });
 
 export default mongoose.model("Post", postSchema)
-
-// user: {
-    //     type: Schema.Types.ObjectId, 
-    //     ref: "User", 
-    //     required: true,
-    // },
-    // img: {
-    //     type: String
-    // },
-    // title: {
-    //     type: String,
-    //     required: true
-    // },
-    // slug: {
-    //     type: String,
-    //     required: true,
-    //     unique: true,
-    // },
-    // desc: {
-    //     type: String,
-    // },
-    // content: {
-    //     type: String,
-    //     required: true,
-    // },
-      // blog_id: {
-        //     type: String,
-        //     required: true,
-        //     // unique: true,
-        // },
-        //  isPublishedAt: { //for draf blog
-        //     type: Boolean,
-        //     default: false,
-        // },

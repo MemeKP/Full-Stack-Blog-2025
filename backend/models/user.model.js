@@ -24,6 +24,10 @@ const userSchema = new Schema({
         type: [String],
         default: [],
     },
+    likedPosts: {
+        type: [String],
+        default: [],
+    },
 }, {timestamps: true});
 
 export default mongoose.model("User", userSchema)

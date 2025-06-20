@@ -35,26 +35,45 @@ export const createOrUpdateUser = async (req, res) => {
     }
 };
 
+export const getUserLikedPosts = async (req, res) => {
+    try {
+        const firebaseUid = req.user.uid;
+        if (!firebaseUid) {
+            return res.status(401).json("User not authenticated!");
+        }
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) {
+            return res.status(401).json({ error: "User not found!" });
+        }
+
+        console.log("✅ Found user:", user.username, "likedPosts:", user.likedPosts);
+        res.status(200).json(user.likedPosts);
+    } catch (err) {
+        console.error("🔥 Error in getUserlikedPosts:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 export const getUserSavedPosts = async (req, res) => {
-  try {
-    const firebaseUser = req.user;
-    const firebaseUid = firebaseUser.uid;
+    try {
+        const firebaseUser = req.user;
+        const firebaseUid = firebaseUser.uid;
 
-    if (!firebaseUid) {
-      return res.status(401).json("User not authenticated!");
+        if (!firebaseUid) {
+            return res.status(401).json("User not authenticated!");
+        }
+
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) {
+            return res.status(401).json({ error: "User not found!" });
+        }
+
+        console.log("✅ Found user:", user.username, "savedPosts:", user.savedPosts);
+        res.status(200).json(user.savedPosts);
+    } catch (err) {
+        console.error("🔥 Error in getUserSavedPosts:", err);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-    const user = await User.findOne({ uid: firebaseUid });
-    if (!user) {
-      return res.status(401).json({ error: "User not found!" });
-    }
-
-    console.log("✅ Found user:", user.username, "savedPosts:", user.savedPosts);
-    res.status(200).json(user.savedPosts);
-  } catch (err) {
-    console.error("🔥 Error in getUserSavedPosts:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
 
 

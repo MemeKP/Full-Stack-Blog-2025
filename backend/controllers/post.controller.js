@@ -106,7 +106,7 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const firebaseUser = req.user;
-    const firebaseUid = firebaseUser?.uid;
+    const firebaseUid = firebaseUser?.uid
 
     if (!firebaseUid) {
       return res.status(401).json("User not authenticated!");
@@ -130,11 +130,11 @@ export const deletePost = async (req, res) => {
     if (!post) return res.status(404).json("Post not found");
 
     if (post.author.toString() !== user._id.toString()) {
-  return res.status(403).json("You can delete only your posts!");
-}
+      return res.status(403).json("You can delete only your posts!");
+    }
 
     const deletedPost = await Post.findOneAndDelete({
-      blog_id: req.params.id,    
+      blog_id: req.params.id,
       author: user._id
     });
 
@@ -146,11 +146,10 @@ export const deletePost = async (req, res) => {
 
     res.status(200).json("Post has been deleted");
   } catch (error) {
-    console.error("Delete Post Error:", error);  
+    console.error("Delete Post Error:", error);
     res.status(500).json("Internal server error");
   }
 };
-
 
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
@@ -161,6 +160,125 @@ export const uploadAuth = async (req, res) => {
   const result = imagekit.getAuthenticationParameters();
   res.send(result);
 }
+
+export const likePost = async (req, res) => {
+  try {
+    const firebaseUid = req.user.uid;
+    if (!firebaseUid) {
+      return res.status(401).json("User not authenticated!")
+    }
+
+    const postId = req.body.postId
+    if (!postId) {
+      return res.status(404).json("Post not found!")
+    }
+
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) {
+      return res.status(404).json("User not found!")
+    }
+
+    const post = await Post.findOne({ blog_id: postId });
+    if (!post.likedBy) post.likedBy = [];
+
+    const isLiked = post.likedBy.includes(firebaseUid);
+    console.log('postid: ', postId)
+    
+    if (!isLiked) {
+      await Post.findByIdAndUpdate(post._id, {
+        $push: { likedBy: firebaseUid }
+      });
+      await User.findByIdAndUpdate(user._id, {
+        $push: { likedPosts: post.blog_id }
+      });
+    } else {
+      await Post.findByIdAndUpdate(post._id, {
+        $pull: { likedBy: firebaseUid }
+      });
+      await User.findByIdAndUpdate(user._id, {
+        $pull: { likedPosts: post.blog_id }
+      });
+    }
+
+    await post.save();
+    await user.save();
+
+    console.log(`${firebaseUid} ${isLiked ? "❌ unliked" : "✅ liked"} post: ${postId}`);
+    res.status(200).json(isLiked ? "Unliked" : "Liked");
+  } catch (err) {
+    console.error("Like Error:", err);
+    res.status(500).json("Internal Server Error");
+  }
+};
+
+// GET /posts/:postId/likes
+export const getPostLikes = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await Post.findOne({ blog_id: postId });
+
+    if (!post) {
+      return res.status(404).json("Post not found");
+    }
+
+    res.status(200).json(post.likedBy); // => [uid1, uid2, ...]
+  } catch (err) {
+    console.error("Error getting likedBy:", err);
+    res.status(500).json("Internal server error");
+  }
+};
+
+// export const likePost = async (req, res) => {
+//   try {
+//     const firebaseUid = req.user.uid;
+//     if (!firebaseUid) {
+//       return res.status(401).json("User not authenticated!")
+//     }
+
+//     const postId = req.body.postId
+//     if (!postId) {
+//       return res.status(404).json("Post not found!")
+//     }
+
+//     const user = await User.findOne({ uid: firebaseUid });
+//     if (!user) {
+//       return res.status(404).json("User not found!")
+//     }
+
+//     const post = await Post.findOne({ blog_id: postId });
+//     if (!post.likedBy) post.likedBy = [];
+
+//     const isLiked = post.likedBy.includes(firebaseUid);
+//     // const isLiked = user.likedBy.some((p) => p === postId)
+//     console.log('postid: ', postId)
+//     // if (isLiked) {
+//     //   post.likedBy.pull(firebaseUid);
+//     //   user.likedPosts = user.likedPosts.filter(p => p !== postId);
+//     // } else {
+//     //   post.likedBy.push(firebaseUid);
+//     //   user.likedPosts.push(postId);
+//     // }
+//     if (!isLiked) {
+//       await Post.findByIdAndUpdate(post._id, {
+//         $push: { likedBy: firebaseUid}
+//       })
+//     } else {
+//       await Post.findByIdAndUpdate(post._id), {
+//         $pull: { likedBy: firebaseUid}
+//       }
+//     }
+
+//     await post.save();
+//     await user.save();
+
+//     console.log(`✔ ${firebaseUid} ${isLiked ? "unliked" : "liked"} post: ${postId}`);
+//     res.status(200).json(isLiked ? "Unliked" : "Liked");
+//   } catch (err) {
+//     console.error("Like Error:", err);
+//     res.status(500).json("Internal Server Error");
+//   }
+// };
 
 // //generate unique slug -> no need
 // const generateUniqueSlug = async (title, desiredSlug = null) => {
