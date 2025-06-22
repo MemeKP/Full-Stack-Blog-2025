@@ -16,5 +16,3 @@ router.get("/:blog_id/likes", getPostLikes);
 
 
 export default router
-
-// router.get("/:slug", getPosts)

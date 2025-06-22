@@ -18,6 +18,17 @@ const PostMenuActions = ({ post }) => {
     const [showMenu, setShowmenu] = useState(false)
     const closeRef = useRef(null);
     const navigate = useNavigate()
+    const [ready, setReady] = useState(false) //ลองแก้ gettoken ช้า
+
+    // แก้รอ get Token ช้า (React Query จะรอโหลด token จาก Firebase ก่อน ถึงจะค่อย query ข้อมูล like/save ได้) 
+    useEffect(() => {
+        // รอ auth พร้อมก่อน
+        const tokenReady = async () => {
+            const token = await getFirebaseToken()
+            if (token) setReady(true)
+        }
+        tokenReady()
+    }, [])
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -33,6 +44,7 @@ const PostMenuActions = ({ post }) => {
 
     const { isPending, error, data: savedPosts } = useQuery({
         queryKey: ["savedPosts"],
+        enabled: ready, // เริ่ม query ได้ก็ต่อเมื่อพร้อม
         queryFn: async () => {
             const token = await getFirebaseToken()
             return axios.get(`${import.meta.env.VITE_API_URL}/users/saved`, {
@@ -88,7 +100,7 @@ const PostMenuActions = ({ post }) => {
 
     const saveMutation = useMutation({
         mutationFn: async () => {
-            const token = await getFirebaseToken()
+            const token = await getFirebaseToken() // ตรงนี้ทำให้ช้า เพราะต้องรอ firebase token
             return axios.patch(`${import.meta.env.VITE_API_URL}/users/save`, {
                 postId: post.blog_id,
             },

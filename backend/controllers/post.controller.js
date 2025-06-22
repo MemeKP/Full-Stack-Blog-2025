@@ -5,26 +5,45 @@ import slugify from "slugify"
 
 export const getPosts = async (req, res) => {
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
-  const page = parseInt(req.query.page) || 1
-  const limit = parseInt(req.query.limit) || 2
+  const page = parseInt(req.query.page) || 1;
+  const noLimit = req.query.noLimit === 'true';
+  const limit = noLimit ? 0 : parseInt(req.query.limit) || 5;
 
-  const posts = await Post.find()
-    //Show author of the blog
-    .populate("author", "username")
-    .limit(limit)
-    .skip((page - 1) * limit) //1st page จะเป็น 0 ก็จะโชว์โพสต์ตาม limit (5) และเมื่อ 2nd -> 2-1*5 = 5 (skip first 5 and show the next 5)
+  const search = req.query.search || '';
+  // console.log("Query params:", req.query);
+  // console.log("🔍 Search keyword:", search);
 
-  const totalPosts = await Post.countDocuments();
-  const hasMore = page * limit < totalPosts
+  //ถ้ามี search ให้ใช้ regex ค้นใน title หรือ tags
+  const searchRegex = new RegExp(search, "i");
 
-  res.status(200).json({ posts, hasMore })
+const searchQuery = search
+  ? {
+      $or: [
+        { title: { $regex: searchRegex } },
+        {tags: { $in: [new RegExp(search, 'i')] }},
+      ],
+    }
+  : {}; // ถ้าไม่มี search ก็หาแบบไม่มี filter
 
+  // console.log(" Final MongoDB query:", JSON.stringify(searchQuery, null, 2));
+  try {
+    const posts = await Post.find(searchQuery)
+      .populate("author", "username")
+      .limit(limit) // ถ้า limit = 0 จะไม่จำกัด
+      .skip((page - 1) * limit);
+
+    // console.log("MongoDB query:", JSON.stringify(searchQuery, null, 2));
+    // console.log("Posts matched:", posts.map(p => p.title));  // ดูชื่อ title จริง
+    const totalPosts = await Post.countDocuments(searchQuery);
+    const hasMore = !noLimit && (page * limit < totalPosts);
+    // console.log("✅ Posts found:", posts.length);
+    res.status(200).json({ posts, hasMore });
+  } catch (error) {
+    console.error("❌ Error in getPosts:", error);
+    res.status(500).json("Failed to fetch posts");
+  }
 }
 
-// export const getPost = async (req, res) => {
-//     const post = await Post.findOne({ slug: req.params.slug }).populate("author", "username")
-//     res.status(200).json(post)
-// }
 export const getPost = async (req, res) => {
   const post = await Post.findOne({ blog_id: req.params.blog_id }).populate("author", "username")
   res.status(200).json(post)
@@ -183,7 +202,7 @@ export const likePost = async (req, res) => {
 
     const isLiked = post.likedBy.includes(firebaseUid);
     console.log('postid: ', postId)
-    
+
     if (!isLiked) {
       await Post.findByIdAndUpdate(post._id, {
         $push: { likedBy: firebaseUid }

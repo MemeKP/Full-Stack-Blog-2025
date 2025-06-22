@@ -37,7 +37,11 @@ const router = createBrowserRouter([
       //   element: <SinglePostPage/>,
       // },
       {
-        path: "/:blog_id",
+        path: "/posts/:blog_id", // เพิ่มเข้ามาให้รองรับจากหน้า /posts
+        element: <SinglePostPage/>,
+      },
+      {
+        path: "/:blog_id", // อันนี้กรณีจากหน้า Home
         element: <SinglePostPage/>,
       },
       {
@@ -67,12 +71,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <SearchProvider>
        <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
         </QueryClientProvider>
     </AuthProvider>
-    </SearchProvider>
+  
   </StrictMode>,
 )

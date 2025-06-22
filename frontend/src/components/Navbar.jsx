@@ -2,14 +2,17 @@ import React from 'react'
 import { useState } from 'react';
 import IKImageWrapper from './IKImageWrapper'
 import SearchBar from './SearchBar';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useSearch } from '../context/SearchContext';
 import { useAuth } from '../context/authContext/userAuthContext';
 
 // Update Navbar.jsx to accept onSearch prop
 const Navbar = () => {
 
-    const { setQuery } = useSearch(); //แชร์ state search query ระหว่าง Navbar และ HomePage (อย่าลืมลบ prop ออกถ้าใช้)
+    // const { setQuery } = useSearch(); //แชร์ state search query ระหว่าง Navbar และ HomePage (อย่าลืมลบ prop ออกถ้าใช้)
+    const [searchParams] = useSearchParams();
+    const query = searchParams.get("search") || "";
+
     const urlEndpoint = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
     const [open, setOpen] = useState(false); // For more info and mobile menu icon
     const { currentUser } = useAuth();
@@ -50,9 +53,9 @@ const Navbar = () => {
                 <Link to="/" className='hover:text-cyan-500 duration-200'>About</Link>
 
                 {/* SEARCH BAR */}
-                <SearchBar onSearch={setQuery} />
+                <SearchBar onSearch={query} />
 
-                
+
 
                 {currentUser ? (
 

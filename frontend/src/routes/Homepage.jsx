@@ -1,5 +1,5 @@
 import AnimationWrapper from '../common/page-animation'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import InPageNavigation from '../components/InPageNavigation'
 import PostList from '../components/PostList'
 import MainLayout from '../components/MainLayout'
@@ -17,7 +17,9 @@ const Homepage = () => {
   const [blogs, setBlogs] = useState(null); //ใช้ใน sidebar
   const [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageSate, setPageState] = useState('All Post');
-  const { query } = useSearch();
+  // const { query } = useSearch();
+  const [searchParams] = useSearchParams();
+    const query = searchParams.get("search") || "";
   const [filteredBlogs, setFilteredBlogs] = useState(allBlogs);
 
   const loadBlogByCategory = (category) => {
@@ -153,8 +155,6 @@ const Homepage = () => {
         </div>
 
         {/*  TRENDING */}
-
-        {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
       </MainLayout>
 
     </AnimationWrapper>
