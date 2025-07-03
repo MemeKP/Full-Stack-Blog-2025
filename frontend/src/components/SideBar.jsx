@@ -1,8 +1,11 @@
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { GoArrowRight } from "react-icons/go";
 import { recommend_topic } from "../config/category";
+import { useEffect } from "react";
 
-const SideBar = ({ pageState, loadBlogByCategory }) => {
+const SideBar = ({ pageState, loadBlogByCategory }) => { 
+
+    const [searchParams, setSearchParams] = useSearchParams()
 
     const trending_mock_post = [
         { title: 'How AI is changing Everything', author: 'John Doe' },
@@ -12,10 +15,32 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
 
     ]
 
-    const handleClick = (e) => {
-        const category = e.target.innerText.toLowerCase();
-        loadBlogByCategory(category)
-    };
+    // const handleFilterChange = (e) => {
+    //     const category = e.target.innerText.toLowerCase();
+    //     loadBlogByCategory(category)
+    // };
+
+    const handleFilterChange = (e) => {
+        const category = e.target.innerText.toLowerCase()
+        const currentCategory = searchParams.get("category") || '';
+        const newCategory = currentCategory === category ? '' : category
+
+        setSearchParams(prev => {
+            const newParams = new URLSearchParams(prev)
+            if (newCategory === '') {
+                newParams.delete('category')
+            } else {
+                newParams.set('category', newCategory)
+            }
+            return newParams
+        })
+    }
+
+    //ติดตาม param แล้วโหลด blog ใหม่
+    useEffect(()=>{
+        const categoryFromParam = searchParams.get("category") || "";
+        loadBlogByCategory(categoryFromParam); // จะยังคง animation/tab ทำงานได้ตามเดิม
+    }, [searchParams]) //ห้ามลืมใส่
 
     return (
 
@@ -27,7 +52,8 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
                     {
                         recommend_topic.map((topic, i) => (
                             <button
-                                onClick={handleClick}
+                                name="category"
+                                onClick={handleFilterChange} 
                                 className={`tag px-3 py-3 rounded-full text-sm font-medium transition-colors duration-200
                                             ${pageState === topic.toLowerCase()
                                         ? 'bg-cyan-500 text-white'
@@ -67,10 +93,7 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
                         </div>
                     ))}
                 </div>
-
             </div>
-
-
         </div>
     )
 }

@@ -4,16 +4,18 @@ import axios from "axios"
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useLocation, useSearchParams } from "react-router-dom";
 
-const fetchPosts = async (pageParam, searchQuery, pathname) => {
+const fetchPosts = async (pageParam, searchQuery, pathname,) => {
   const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
     params: { 
       page: pageParam, 
       limit: pathname === '/' ? 2:10 ,
       search: searchQuery || '',
+      // category: categoryQuery || '', //ส่วน filter
     },
   })
   return res.data;
 };
+
 
 const PostList = () => {
   const location = useLocation()
@@ -29,8 +31,9 @@ const PostList = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ['posts', searchQuery],
-    queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam, searchQuery, location.pathname),
+    queryKey: ['posts', searchQuery, ],
+    queryFn: ({ pageParam = 1 }) => 
+      fetchPosts(pageParam, searchQuery, location.pathname, ),
     initialPageParam: 1,
     getNextPageParam: (lastPage, pages) => lastPage.hasMore ? pages.length + 1 : undefined,
   })

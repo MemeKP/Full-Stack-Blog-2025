@@ -2,8 +2,11 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.DB_LOCATION);
-        serverSelectionTimeoutMS: 15000, // default คือ 30,000ms
+        await mongoose.connect(process.env.DB_LOCATION, {
+            // useNewUrlParser: true,
+            // useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 30000,    
+        });
         console.log('mongodb is connected!')
     } catch (error) {
         console.log(error);

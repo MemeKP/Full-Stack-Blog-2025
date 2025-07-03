@@ -1,7 +1,6 @@
 import ImageKit from "imagekit";
 import Post from "../models/post.model.js"
 import User from "../models/user.model.js"
-import slugify from "slugify"
 
 export const getPosts = async (req, res) => {
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
@@ -10,11 +9,30 @@ export const getPosts = async (req, res) => {
   const limit = noLimit ? 0 : parseInt(req.query.limit) || 5;
 
   const search = req.query.search || '';
-  // console.log("Query params:", req.query);
-  // console.log("🔍 Search keyword:", search);
+  const category = req.query.category || '';
+  // const {category} = req.query; // หรือ req.query.category || '';
+
+  const query = {
+    draft: false, // ดึงเฉพาะโพสต์ที่ publish แล้ว
+  }
+  // ถ้ามี category → เพิ่มเข้า query
+  if (category) {
+    searchQuery.category = category.toLowerCase(); // normalize lowercase
+  }
 
   //ถ้ามี search ให้ใช้ regex ค้นใน title หรือ tags
   const searchRegex = new RegExp(search, "i");
+  // let searchQuery = {}
+
+  // if (search) {
+  //   searchQuery.$or = [
+  //       { title: { $regex: searchRegex } },
+  //       {tags: { $in: [searchRegex] }},
+  //     ]
+  // }
+  // if (category) {
+  //   searchQuery.category = category
+  // }
 
 const searchQuery = search
   ? {
@@ -25,18 +43,18 @@ const searchQuery = search
     }
   : {}; // ถ้าไม่มี search ก็หาแบบไม่มี filter
 
-  // console.log(" Final MongoDB query:", JSON.stringify(searchQuery, null, 2));
+  console.log(" Final MongoDB query:", JSON.stringify(searchQuery, null, 2));
   try {
     const posts = await Post.find(searchQuery)
       .populate("author", "username")
       .limit(limit) // ถ้า limit = 0 จะไม่จำกัด
       .skip((page - 1) * limit);
 
-    // console.log("MongoDB query:", JSON.stringify(searchQuery, null, 2));
-    // console.log("Posts matched:", posts.map(p => p.title));  // ดูชื่อ title จริง
+    console.log("MongoDB query:", JSON.stringify(searchQuery, null, 2));
+    console.log("Posts matched:", posts.map(p => p.title));  // ดูชื่อ title จริง
     const totalPosts = await Post.countDocuments(searchQuery);
     const hasMore = !noLimit && (page * limit < totalPosts);
-    // console.log("✅ Posts found:", posts.length);
+    console.log("✅ Posts found:", posts.length);
     res.status(200).json({ posts, hasMore });
   } catch (error) {
     console.error("❌ Error in getPosts:", error);
