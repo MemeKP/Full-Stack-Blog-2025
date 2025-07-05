@@ -6,7 +6,8 @@ export const getPosts = async (req, res) => {
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
   const page = parseInt(req.query.page) || 1;
   const noLimit = req.query.noLimit === "true";
-  const limit = noLimit ? 0 : parseInt(req.query.limit) || 5;
+  // const limit = noLimit ? 0 : parseInt(req.query.limit) || 5;
+  const limit = req.query.limit ? parseInt(req.query.limit) : (noLimit ? 0 : 5);
   const search = req.query.search || "";
   const category = req.query.category?.trim().toLowerCase() || "";
   const sort = req.query.sort || "newest"; // ให้ defult เป็น newest
@@ -90,15 +91,6 @@ export const getPosts = async (req, res) => {
     res.status(500).json("Failed to fetch posts");
   }
 };
-
-// const searchQuery = search
-//   ? {
-//       $or: [
-//         { title: { $regex: searchRegex } },
-//         { tags: { $in: [new RegExp(search, "i")] } },
-//       ],
-//     }
-//   : {}; // ถ้าไม่มี search ก็หาแบบไม่มี filter
 
 export const getPost = async (req, res) => {
   const post = await Post.findOne({ blog_id: req.params.blog_id }).populate(

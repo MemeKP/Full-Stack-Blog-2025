@@ -1,17 +1,21 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { GoArrowRight } from "react-icons/go";
 import { recommend_topic, sort_options } from "../config/category";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const SideBar = ({ pageState, loadBlogByCategory }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate()
 
-  const trending_mock_post = [
-    { title: "How AI is changing Everything", author: "John Doe" },
-    { title: "10 CSS Tricks You Should Know", author: "Jane Smith" },
-    { title: "Designing for Accessibility", author: "Noon West" },
-    { title: "Can AI see Beauty", author: "Bow Reen" },
-  ];
+  const { data: trendingPosts } = useQuery({
+    queryKey: ["trendingPosts"],
+    queryFn: async () => {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts?sort=likes&limit=5&noLimit=true`)
+        return res.data.posts; // หรือ res.data แล้ว map .posts
+    }
+  })
 
   const handleFilterChange = (e) => {
     const category = e.target.innerText.toLowerCase();
@@ -96,22 +100,25 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
         <h1 className="font-bold text-lg mb-2">Trending</h1>
 
         <div className="flex flex-col divide-y divide-gray-400">
-          {trending_mock_post.map((post, i) => (
-            <div key={i} className="flex justify-between items-center py-4">
+          {trendingPosts?.map((post, i) => (
+            <div key={post.blog_id} className="flex justify-between items-center py-4">
               <div className="flex gap-3">
-                <div className="text-4xl font-bold w-20">
+                <div className="text-4xl font-bold min-w-[4rem] ">
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-gray-700 hover:underline cursor-pointer">
+                  <span 
+                    className="font-semibold text-gray-700 hover:underline cursor-pointer line-clamp-2 break-words"
+                    onClick={() => navigate(`/posts/${post.blog_id}`)}
+                  >
                     {post.title}
                   </span>
                   <span className="text-sm text-gray-500">
                     {" "}
                     by
-                    <Link to={"/test"} className="cursor-pointer">
+                    <Link to={"/test"} className="cursor-pointer truncate max-w-[150px]">
                       {" "}
-                      {post.author}
+                      {post.author?.username || 'Unknown'}
                     </Link>
                   </span>
                 </div>

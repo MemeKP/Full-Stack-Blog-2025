@@ -2,12 +2,13 @@ import express from "express"
 import Post from "../models/post.model.js"
 import { verifyFirebaseToken } from "../middlewares/auth.js";
 import { getPostLikes, getPost, getPosts, createPost, deletePost, updatePost, uploadAuth, likePost } from "../controllers/post.controller.js";
+import increaseVisit from "../middlewares/increaseVisit.js";
 
 const router = express.Router()
 
 router.get("/upload-auth", uploadAuth);
 router.get("/", getPosts);
-router.get("/:blog_id", getPost)
+router.get("/:blog_id", increaseVisit,getPost)
 router.post("/", verifyFirebaseToken, createPost);
 router.delete("/:id", verifyFirebaseToken, deletePost);
 router.put('/:id', updatePost)

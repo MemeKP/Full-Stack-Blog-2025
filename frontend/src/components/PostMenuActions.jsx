@@ -97,7 +97,7 @@ const PostMenuActions = ({ post }) => {
 
     const isSaved = savedPosts?.data?.some((p) => p === post.blog_id) || false
     const queryClient = useQueryClient()
-
+  
     const saveMutation = useMutation({
         mutationFn: async () => {
             const token = await getFirebaseToken() // ตรงนี้ทำให้ช้า เพราะต้องรอ firebase token
@@ -230,7 +230,7 @@ const PostMenuActions = ({ post }) => {
             {/* VIEW */}
             <span className="flex items-center">
                 <MdOutlineRemoveRedEye className="text-2xl text-gray-500 gap-1" />
-                <span className="px-2 text-gray-600">1001</span>
+                <span className="px-2 text-gray-600">{post.visit}</span>
             </span>
 
             {/* LIKE/SAVE */}
