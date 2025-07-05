@@ -3,7 +3,12 @@ import React, { useEffect, useState, useRef} from 'react'
 export let activeTabLineRef;
 export let activeTabRef;
 
-const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, children}) => {
+const InPageNavigation = ({ 
+  routes, 
+  defaultHidden = [], 
+  defaultActiveIndex = 0, 
+  children
+}) => {
 
   activeTabLineRef = useRef(); //ต้องใช้ใน homepage ด้วย (update hr)
   let [inPageNavIndex, setinPageNavIndex] = useState(defaultActiveIndex);

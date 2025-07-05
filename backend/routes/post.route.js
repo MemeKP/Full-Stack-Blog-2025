@@ -1,12 +1,19 @@
 import express from "express"
 import Post from "../models/post.model.js"
-import { getPosts, createPost, deletePost } from "../controllers/post.controller.js";
+import { verifyFirebaseToken } from "../middlewares/auth.js";
+import { getPostLikes, getPost, getPosts, createPost, deletePost, updatePost, uploadAuth, likePost } from "../controllers/post.controller.js";
+import increaseVisit from "../middlewares/increaseVisit.js";
 
 const router = express.Router()
 
+router.get("/upload-auth", uploadAuth);
 router.get("/", getPosts);
-router.get("/:slug", getPosts)
-router.post("/", createPost);
-router.delete("/:id", deletePost);
+router.get("/:blog_id", increaseVisit,getPost)
+router.post("/", verifyFirebaseToken, createPost);
+router.delete("/:id", verifyFirebaseToken, deletePost);
+router.put('/:id', updatePost)
+router.patch("/like", verifyFirebaseToken, likePost)
+router.get("/:blog_id/likes", getPostLikes);
+
 
 export default router

@@ -1,5 +1,5 @@
 import AnimationWrapper from '../common/page-animation'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import InPageNavigation from '../components/InPageNavigation'
 import PostList from '../components/PostList'
 import MainLayout from '../components/MainLayout'
@@ -16,18 +16,28 @@ const Homepage = () => {
 
   const [blogs, setBlogs] = useState(null); //ใช้ใน sidebar
   const [trendingBlogs, setTrendingBlogs] = useState(null);
-  let [pageSate, setPageState] = useState('All Post');
-  const { query } = useSearch();
+
+  // const { query } = useSearch();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get("search") || '';
+  const category = searchParams.get('category') || 'All Post'
+  let [pageState, setPageState] = useState(category); 
+  // const pageState = category ? capitalize(category) : 'All Post';
   const [filteredBlogs, setFilteredBlogs] = useState(allBlogs);
+  // const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+
+  useEffect(() => {
+    setPageState(category)
+  }, [category])
 
   const loadBlogByCategory = (category) => {
     setBlogs(null);
-    if (pageSate === category) {
+    if (pageState === category) {
       setPageState('All Post');
       return;
     }
     setPageState(category)
-  }
+  }  
 
   /* fetchLastesBlogs function 
       fetch แล้วจะไปเก็บในตัวแปร blogs
@@ -36,16 +46,16 @@ const Homepage = () => {
 
   useEffect(() => {
     activeTabRef.current.click() //update hr ให้พอดีกับตนส
-    if (pageSate === 'All Post') {
+    if (pageState === 'All Post') {
       // fetchLastesBlogs();
       // setBlogs(allBlogs); // use mock data for testing UI
     }
-    if (pageSate === 'Trending') {
+    if (pageState === 'Trending') {
       // fetchTrendingBlogs();
     }
     // use mock data for testing UI
     setTrendingBlogs(mock_trending_post);
-  }, [pageSate])
+  }, [pageState])
 
 
   useEffect(() => {
@@ -85,18 +95,18 @@ const Homepage = () => {
       <MainLayout
         sidebar={
           <SideBar
-            pageState={pageSate}
+            pageState={pageState}
             loadBlogByCategory={loadBlogByCategory}
           />
         }
       >
         <div className="w-full">
-          <InPageNavigation routes={[pageSate, "Trending"]} defaultHidden={["Trending"]}>
+          <InPageNavigation key={pageState} routes={[pageState, "Trending"]} defaultHidden={["Trending"]}>
 
             {/* LASTEST BLOG */}
             <>
               {/* POST LIST */}
-              <PostList />
+              <PostList search={query} category={category}/>
               {/* {
                 //blogs == null ? <Loader /> :
                 blogs.map((blog, i) => {
@@ -133,6 +143,7 @@ const Homepage = () => {
                 </AnimationWrapper>
               })
             } */}
+           
             {/* TEST: Trending Blogs */}
             {
               trendingBlogs == null ? (
@@ -148,13 +159,21 @@ const Homepage = () => {
                   : <NoDataMessage message='No blog published' />
               )
             }
-
+            
           </InPageNavigation>
         </div>
+         {/* TRENDING & FILTER BLOGS */}
+         {/* <div>
+          {
+            filteredBlogs ? null (
+              <p>Loading filtered blogs...</p>
+            ) : (
+              filteredBlogs.length ? 
+              filteredBlogs
+            )
+          }
+         </div> */}
 
-        {/*  TRENDING */}
-
-        {/* load more post..ไม่แน่ใจว่าควรอยู่ในนี้ไหม*/}
       </MainLayout>
 
     </AnimationWrapper>

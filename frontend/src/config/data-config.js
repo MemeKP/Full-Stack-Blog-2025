@@ -35,8 +35,9 @@ export const blog_data = [
         "blog_id": "mollit aliquip ullamco sunt in",
         "title": "voluptate dolore aliqua consequat sit in 2023",
         "banner": "https://blogging-website-xyz-tutorial.s3.ap-south-1.amazonaws.com/et-tips.jpg",
-        "desc": "Nostrud in elit cillum officia laborum non ut ex.",
-        "content": [],
+        "desc": "lorem100",
+        "content": [
+        ],
         "tags": [
             "CSS",
             "webdev"

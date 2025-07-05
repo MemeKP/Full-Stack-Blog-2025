@@ -358,4 +358,3 @@ const PageEditor = ({ onChange }) => {
 }
 
 export default PageEditor
-

@@ -1,7 +1,11 @@
 export const recommend_topic = [
-    'Technology','Web Dev', 'AI', 'Economics', 'Programming'
+    'Technology', 'Education','Dev', 'AI', 'Travel', 'Programming', 'General'
 ]
 
-export const all_categories = [
-    
+export const sort_options = [
+ 'Newest', 'Oldest', 'Popular'
+]
+
+export const post_tags = [
+    'DEV', 'AI', 'UX', 'STARTUP'
 ]
