@@ -325,6 +325,7 @@ const Write = () => {
               <option value="lifestlye">Lifestlye</option>
               <option value="education">Education</option>
               <option value="travel">Travel</option>
+              <option value="AI">AI</option>
             </select>
           </div>
 

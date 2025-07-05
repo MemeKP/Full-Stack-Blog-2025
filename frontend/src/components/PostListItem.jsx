@@ -44,7 +44,7 @@ const PostListItem = ({ post }) => {
 
           <span> on </span>
           <Link className="text-cyan-600 hover:underline">{post.category}</Link>
-          <span>{formatDate(Date(post.publishedAt), "MMMM, d yyyy")}</span>
+          <span>{formatDate(new Date(post.publishedAt), "MMMM, d yyyy")}</span>
         </div>
         <p>
           {post.desc}

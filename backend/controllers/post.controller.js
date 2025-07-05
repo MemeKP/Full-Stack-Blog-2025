@@ -1,96 +1,132 @@
 import ImageKit from "imagekit";
-import Post from "../models/post.model.js"
-import User from "../models/user.model.js"
+import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 
 export const getPosts = async (req, res) => {
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
   const page = parseInt(req.query.page) || 1;
-  const noLimit = req.query.noLimit === 'true';
+  const noLimit = req.query.noLimit === "true";
   const limit = noLimit ? 0 : parseInt(req.query.limit) || 5;
+  const search = req.query.search || "";
+  const category = req.query.category?.trim().toLowerCase() || "";
+  const sort = req.query.sort || "newest"; // ให้ defult เป็น newest
+  const featured = req.query.featured;
 
-  const search = req.query.search || '';
-  const category = req.query.category || '';
   // const {category} = req.query; // หรือ req.query.category || '';
-
   const query = {
-    draft: false, // ดึงเฉพาะโพสต์ที่ publish แล้ว
-  }
+    // draft: false, // ดึงเฉพาะโพสต์ที่ publish แล้ว พวก test slug test postman postจะไม่เห็น
+  };
+  console.log(query);
+
   // ถ้ามี category → เพิ่มเข้า query
+  // ใช้ regex แทน toLowerCase เพื่อป้องกัน case-insensitive ของ mongoDB
   if (category) {
-    searchQuery.category = category.toLowerCase(); // normalize lowercase
+    query.category = { $regex: `^${category}$`, $options: "i" };
   }
+
+  let searchQuery = {};
 
   //ถ้ามี search ให้ใช้ regex ค้นใน title หรือ tags
   const searchRegex = new RegExp(search, "i");
-  // let searchQuery = {}
-
-  // if (search) {
-  //   searchQuery.$or = [
-  //       { title: { $regex: searchRegex } },
-  //       {tags: { $in: [searchRegex] }},
-  //     ]
-  // }
-  // if (category) {
-  //   searchQuery.category = category
-  // }
-
-const searchQuery = search
-  ? {
+  if (search) {
+    searchQuery = {
       $or: [
         { title: { $regex: searchRegex } },
-        {tags: { $in: [new RegExp(search, 'i')] }},
+        { tags: { $in: [new RegExp(search, "i")] } },
       ],
-    }
-  : {}; // ถ้าไม่มี search ก็หาแบบไม่มี filter
+    };
+  }
 
-  console.log(" Final MongoDB query:", JSON.stringify(searchQuery, null, 2));
+  let sortObj = { publishedAt: -1 };
+  if (sort) {
+    switch (sort) {
+      case "newest":
+        sortObj = { publishedAt: -1 };
+        break;
+      case "oldest":
+        sortObj = { publishedAt: 1 };
+        break;
+      case "popular":
+        sortObj = { visit: -1 };
+        break;
+      case "trending":
+        sortObj = { visit: -1 };
+        query.publishedAt = {
+          $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+        };
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (featured) {
+    query.isFeatured = true;
+  }
+
+  const finalQuery = {
+    ...query,
+    ...searchQuery,
+  };
+
+  console.log("req.query.sort:", sort);
+  console.log("Sort object:", sortObj);
+  console.log(" Final MongoDB query:", JSON.stringify(finalQuery, null, 2));
   try {
-    const posts = await Post.find(searchQuery)
+    const posts = await Post.find(finalQuery)
       .populate("author", "username")
       .limit(limit) // ถ้า limit = 0 จะไม่จำกัด
-      .skip((page - 1) * limit);
+      .skip((page - 1) * limit)
+      .sort(sortObj); //เรียงจาก post ล่าสุดก่อน
 
-    console.log("MongoDB query:", JSON.stringify(searchQuery, null, 2));
-    console.log("Posts matched:", posts.map(p => p.title));  // ดูชื่อ title จริง
-    const totalPosts = await Post.countDocuments(searchQuery);
-    const hasMore = !noLimit && (page * limit < totalPosts);
+    // console.log("MongoDB query:", JSON.stringify(searchQuery, null, 2));
+    // console.log("Posts matched:", posts.map(p => p.title));  // ดูชื่อ title จริง
+    const totalPosts = await Post.countDocuments(finalQuery);
+    const hasMore = !noLimit && page * limit < totalPosts;
     console.log("✅ Posts found:", posts.length);
     res.status(200).json({ posts, hasMore });
   } catch (error) {
     console.error("❌ Error in getPosts:", error);
     res.status(500).json("Failed to fetch posts");
   }
-}
+};
+
+// const searchQuery = search
+//   ? {
+//       $or: [
+//         { title: { $regex: searchRegex } },
+//         { tags: { $in: [new RegExp(search, "i")] } },
+//       ],
+//     }
+//   : {}; // ถ้าไม่มี search ก็หาแบบไม่มี filter
 
 export const getPost = async (req, res) => {
-  const post = await Post.findOne({ blog_id: req.params.blog_id }).populate("author", "username")
-  res.status(200).json(post)
-}
+  const post = await Post.findOne({ blog_id: req.params.blog_id }).populate(
+    "author",
+    "username"
+  );
+  res.status(200).json(post);
+};
 
 export const createPost = async (req, res) => {
   try {
     const firebaseUser = req.user; // จาก verifyFirebaseToken
     const firebaseUid = firebaseUser.uid;
 
-    const {
-      title,
-      desc,
-      banner,
-      category,
-      tags,
-      content,
-      draft
-    } = req.body;
+    const { title, desc, banner, category, tags, content, draft } = req.body;
 
     if (!title || !desc || !content) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const slug = title
-      .replace(/[^a-zA-Z0-9]/g, " ")
-      .replace(/\s+/g, "-")
-      .toLowerCase()
-      .trim() + "-" + Date.now();
+    const slug =
+      title
+        .replace(/[^a-zA-Z0-9]/g, " ")
+        .replace(/\s+/g, "-")
+        .toLowerCase()
+        .trim() +
+      "-" +
+      Date.now();
 
     // User model ที่เชื่อมกับ firebaseUid
     const user = await User.findOne({ uid: firebaseUid });
@@ -107,7 +143,7 @@ export const createPost = async (req, res) => {
       slug,
       blog_id: slug,
       author: user._id, // MongoDB ObjectId ของ user
-      publishedAt: draft ? null : new Date()
+      publishedAt: draft ? null : new Date(),
     });
 
     const saved = await newPost.save();
@@ -126,24 +162,24 @@ export const updatePost = async (req, res) => {
     const { title, slug, ...rest } = req.body;
 
     let finalSlug = slug;
-    if (!finalSlug || finalSlug === 'null') {
+    if (!finalSlug || finalSlug === "null") {
       finalSlug = await generateUniqueSlug(title || "untitled");
     }
     const updatePost = await Post.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true } //return update doc
-    )
-    res.status(200).json(updatePost)
+    );
+    res.status(200).json(updatePost);
   } catch (err) {
-    res.status(500).json({ error: "Failed to update post" })
+    res.status(500).json({ error: "Failed to update post" });
   }
-}
+};
 
 export const deletePost = async (req, res) => {
   try {
     const firebaseUser = req.user;
-    const firebaseUid = firebaseUser?.uid
+    const firebaseUid = firebaseUser?.uid;
 
     if (!firebaseUid) {
       return res.status(401).json("User not authenticated!");
@@ -172,7 +208,7 @@ export const deletePost = async (req, res) => {
 
     const deletedPost = await Post.findOneAndDelete({
       blog_id: req.params.id,
-      author: user._id
+      author: user._id,
     });
 
     await Post.deleteOne({ blog_id: req.params.id });
@@ -191,56 +227,58 @@ export const deletePost = async (req, res) => {
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-})
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
 export const uploadAuth = async (req, res) => {
   const result = imagekit.getAuthenticationParameters();
   res.send(result);
-}
+};
 
 export const likePost = async (req, res) => {
   try {
     const firebaseUid = req.user.uid;
     if (!firebaseUid) {
-      return res.status(401).json("User not authenticated!")
+      return res.status(401).json("User not authenticated!");
     }
 
-    const postId = req.body.postId
+    const postId = req.body.postId;
     if (!postId) {
-      return res.status(404).json("Post not found!")
+      return res.status(404).json("Post not found!");
     }
 
     const user = await User.findOne({ uid: firebaseUid });
     if (!user) {
-      return res.status(404).json("User not found!")
+      return res.status(404).json("User not found!");
     }
 
     const post = await Post.findOne({ blog_id: postId });
     if (!post.likedBy) post.likedBy = [];
 
     const isLiked = post.likedBy.includes(firebaseUid);
-    console.log('postid: ', postId)
+    console.log("postid: ", postId);
 
     if (!isLiked) {
       await Post.findByIdAndUpdate(post._id, {
-        $push: { likedBy: firebaseUid }
+        $push: { likedBy: firebaseUid },
       });
       await User.findByIdAndUpdate(user._id, {
-        $push: { likedPosts: post.blog_id }
+        $push: { likedPosts: post.blog_id },
       });
     } else {
       await Post.findByIdAndUpdate(post._id, {
-        $pull: { likedBy: firebaseUid }
+        $pull: { likedBy: firebaseUid },
       });
       await User.findByIdAndUpdate(user._id, {
-        $pull: { likedPosts: post.blog_id }
+        $pull: { likedPosts: post.blog_id },
       });
     }
 
     await post.save();
     await user.save();
 
-    console.log(`${firebaseUid} ${isLiked ? "❌ unliked" : "✅ liked"} post: ${postId}`);
+    console.log(
+      `${firebaseUid} ${isLiked ? "❌ unliked" : "✅ liked"} post: ${postId}`
+    );
     res.status(200).json(isLiked ? "Unliked" : "Liked");
   } catch (err) {
     console.error("Like Error:", err);
