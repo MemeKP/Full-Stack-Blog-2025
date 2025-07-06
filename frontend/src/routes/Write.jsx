@@ -88,7 +88,7 @@ const Write = () => {
       category,
       tags,
       slug: finalSlug,
-      author: currentUser?._id || '68416df480cba6d146f7b1e3',
+      author: currentUser?._id || '',
     };
 
     console.log("💾 Saving Draft:", data);
@@ -119,7 +119,7 @@ const Write = () => {
       category,
       tags,
       draft: false,
-      author: currentUser?._id || '68416df480cba6d146f7b1e3',
+      author: currentUser?._id || '',
     }
 
     const token = await getFirebaseToken();
@@ -400,44 +400,3 @@ const Write = () => {
 }
 
 export default Write
-
-
-/* PUBLISH POST
-const handlePublish = async (e) => {
-  e.preventDefault();
-
-  let finalSlug = slug;
-  if (!finalSlug || finalSlug === 'test-slug') {
-    finalSlug = generateSlug(title);
-    setSlug(finalSlug);
-  }
-
-  let localId = null;
-  const savedDraft = localStorage.getItem('draftPost');
-  if (savedDraft) {
-    try {
-      localId = JSON.parse(savedDraft)._id;
-      if (!postId && localId) {
-        setPostId(localId);
-      }
-    } catch (e) {
-      console.warn("❗ Error parsing draftPost:", e);
-    }
-  }
-
-  const data = {
-    _id: localId || postId,
-    title,
-    content,
-    isPublishedAt: true,
-    desc,
-    category,
-    tags,
-    slug: finalSlug,
-    author: currentUser?._id || '68416df480cba6d146f7b1e3',
-  };
-
-  console.log("🚀 Publishing:", data);
-  mutation.mutate(data);
-};
-*/

@@ -4,6 +4,7 @@ import { useState } from "react"
 
 const PostListItem = ({ post }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
+  if (!post || !post._id) return null;
 
   return (
     <div className=" py-4 mt-4 flex flex-col xl:flex-row gap-8">
@@ -50,7 +51,7 @@ const PostListItem = ({ post }) => {
           {post.desc}
         </p>
         <div>
-          <Link to={`/${post.blog_id}`} className="text-cyan-600 hover:underline">Read More</Link>
+          <Link to={`/${post.blog_id || 'invalid'}`} className="text-cyan-600 hover:underline">Read More</Link>
         </div>
 
       </div>

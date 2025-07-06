@@ -100,7 +100,9 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
         <h1 className="font-bold text-lg mb-2">Trending</h1>
 
         <div className="flex flex-col divide-y divide-gray-400">
-          {trendingPosts?.map((post, i) => (
+          {trendingPosts
+            ?.filter(post => post && post.blog_id)
+            .map((post, i) => (
             <div key={post.blog_id} className="flex justify-between items-center py-4">
               <div className="flex gap-3">
                 <div className="text-4xl font-bold min-w-[4rem] ">
