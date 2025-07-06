@@ -15,7 +15,7 @@ export const getPosts = async (req, res) => {
 
   // const {category} = req.query; // หรือ req.query.category || '';
   const query = {
-    // draft: false, // ดึงเฉพาะโพสต์ที่ publish แล้ว พวก test slug test postman postจะไม่เห็น
+    draft: false, // ดึงเฉพาะโพสต์ที่ publish แล้ว พวก test slug test postman postจะไม่เห็น
   };
   console.log(query);
 
@@ -82,6 +82,7 @@ export const getPosts = async (req, res) => {
 
     // console.log("MongoDB query:", JSON.stringify(searchQuery, null, 2));
     // console.log("Posts matched:", posts.map(p => p.title));  // ดูชื่อ title จริง
+    console.log(posts.map(p => ({ id: p._id, title: p.title })));
     const totalPosts = await Post.countDocuments(finalQuery);
     const hasMore = !noLimit && page * limit < totalPosts;
     console.log("✅ Posts found:", posts.length);
