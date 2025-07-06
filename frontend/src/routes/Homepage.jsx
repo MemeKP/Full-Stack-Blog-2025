@@ -151,7 +151,9 @@ const Homepage = () => {
                 <p>Loading trending blogs...</p>
               ) : (
                 trendingBlogs.length ?
-                  trendingBlogs.map((blog, i) => (
+                  trendingBlogs
+                    ?.filter(post => post && post._id && post.blog_id)
+                    .map((blog, i) => (
                     <AnimationWrapper transition={{ duration: 1, delay: i * 0.2 }} key={blog.blogId}>
                       <MinimalPost blog={blog} index={i} />
                     </AnimationWrapper>
