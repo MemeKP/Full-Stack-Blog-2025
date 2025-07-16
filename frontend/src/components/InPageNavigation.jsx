@@ -50,7 +50,7 @@ const InPageNavigation = ({
               <button
                 ref={i == defaultActiveIndex ? activeTabRef : null}
                 key={i}
-                className={'p-3 px-5 text-lg font-medium capitalize ' + (inPageNavIndex == i ? 'text-black' : 'text-gray-500')
+                className={'p-3 px-5 text-md font-medium capitalize ' + (inPageNavIndex == i ? 'text-black' : 'text-gray-500')
                   + (defaultHidden.includes(route) ? " md:hidden" : "") // checking if the root is inside the defaultHidden or not. (return value: true/false)
                 }
                 onClick={(e) => { changePageState(e.target, i) }}

@@ -21,11 +21,11 @@ const Navbar = () => {
 
     return (
 
-        <div className='w-full h-16 md:h-20 flex items-center justify-between'>
+        <div className='w-full h-15 md:h-20 flex items-center justify-between'>
             {/* LOGO */}
-            <Link to="/" className='flex items-center gap-4 text-xl font-bold'>
+            <Link to="/" className='flex items-center gap-4 text-base font-bold'>
                 {/* <IKImage urlEndpoint={urlEndpoint} path='\logo.png' className='w-12 h-12' alt='PW Logo'/> */}
-                <IKImageWrapper src='logo.png' className='w-12 h-12' alt='PW Logo' />
+                <IKImageWrapper src='logo.png' className='w-10 h-10' alt='PW Logo' />
                 <span>PW Blog</span>
             </Link>
 
@@ -47,7 +47,7 @@ const Navbar = () => {
                 </div>
             </div>
             {/* DESKTOP MENU */}
-            <div className='hidden md:flex items-center gap-8 xl:gap-12 font-medium'>
+            <div className='hidden md:flex items-center gap-8 xl:gap-12 font-medium text-sm'>
                 <Link to="/" className='hover:text-cyan-500 duration-200'>Home</Link>
                 <Link to="/write" className='hover:text-cyan-500 duration-200'>Write</Link>
                 <Link to="/" className='hover:text-cyan-500 duration-200'>About</Link>
@@ -55,15 +55,13 @@ const Navbar = () => {
                 {/* SEARCH BAR */}
                 <SearchBar onSearch={query} />
 
-
-
                 {currentUser ? (
 
                     <Link to={`/profile/${currentUser.uid}`}>
                         <IKImageWrapper
                             src={currentUser.photoURL || "defaultprofile.png"}
                             alt="profile"
-                            className="w-12 h-12 rounded-full object-cover"
+                            className="w-10 h-10 rounded-full object-cover"
                         />
                     </Link>
                 ) : (

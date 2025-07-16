@@ -26,6 +26,7 @@ const fetchPosts = async (
       sort: sortQuery,
     },
   });
+  console.log("📦 response.data:", res.data); // สำคัญ!
   return res.data;
 };
 
@@ -59,10 +60,19 @@ const PostList = () => {
 
   if (status === "error") return "An error has occurred: " + error.message;
 
-  const allPosts = data?.pages?.flatMap((page) => page.posts) || [];
-  console.log(data); //ลองดูผลลัพธ์
-  console.log("🧪 allPosts = ", allPosts);
+  // const allPosts = data?.pages?.flatMap((page) => page.posts) || [];
+  const allPosts = data?.pages
+  ?.flatMap((page) => Array.isArray(page?.posts) ? page.posts : [])
+  .filter(post => post && post._id) || [];
 
+  console.log("pages:", data?.pages)
+  console.log(data); //ลองดูผลลัพธ์
+  console.log("allPosts = ", allPosts);
+  allPosts.forEach((p, i) => {
+    if (!p || !p._id) {
+      console.warn(`⚠️ Problem at index ${i}:`, p);
+    }
+  });
 
   return (
     <InfiniteScroll
@@ -76,10 +86,9 @@ const PostList = () => {
         </p>
       }
     >
-      
       {/* map ตาม array ให้ post แต่ละอันโชว์ <PostListItem /> */}
       {allPosts
-        .filter((post) => post && post._id) // กรองเฉพาะ post ที่ไม่ null และมี _id
+        .filter((post) => post && post._id && post.blog_id) // กรองเฉพาะ post ที่ไม่ null และมี _id
         .map((post) => (
           <PostListItem key={post._id} post={post} />
         ))}
