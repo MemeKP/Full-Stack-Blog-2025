@@ -3,6 +3,8 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 export const getPosts = async (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
   const page = parseInt(req.query.page) || 1;
   const noLimit = req.query.noLimit === "true";
