@@ -53,13 +53,13 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
     <div className="min-w-[40%] lg:min-w-[400px] max-w-min border-l border-gray-200 pl-8 pt-3 max-md:hidden">
       {/* RECOMMENDED */}
       <div className="flex flex-col gap-5 ">
-        <h1 className="font-bold text-lg mb-2 ">Recommended topics</h1>
+        <h1 className="font-bold text-base mb-2 ">Recommended topics</h1>
         <div className="flex flex-wrap gap-2">
           {recommend_topic.map((topic, i) => (
             <button
               name="category"
               onClick={handleFilterChange}
-              className={`tag px-3 py-3 rounded-full text-sm font-medium transition-colors duration-200
+              className={`tag px-2 py-2 rounded-full text-xs font-medium transition-colors duration-200
                                             ${
                                               pageState === topic.toLowerCase()
                                                 ? "bg-cyan-500 text-white"
@@ -73,13 +73,13 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
         </div>
       </div>
       {/* SORT */}
-      <div className="flex flex-col mt-10 gap-5">
-        <h2 className="text-lg font-semibold mb-2">Sort by</h2>
+      <div className="flex flex-col mt-10 gap-2">
+        <h2 className="text-base font-semibold mb-2">Sort by</h2>
         <div className="flex flex-col gap-2">
           {sort_options.map((sort) => (
             <label
               key={sort}
-              className="flex items-center gap-2 cursor-pointer font-medium "
+              className="flex items-center gap-2 cursor-pointer text-xs font-medium "
             >
               <input
                 type="radio"
@@ -87,7 +87,7 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
                 value={sort.toLowerCase()}
                 checked={searchParams.get("sort") === sort.toLowerCase()}
                 onChange={handleSortChange}
-                className="appearance-none w-4 h-4 border border-gray-300 rounded-full checked:bg-cyan-600 checked:border-transparent transition duration-150"
+                className="appearance-none w-3 h-3 border border-gray-300 rounded-full checked:bg-cyan-600 checked:border-transparent transition duration-150"
               />
               <span className="capitalize">{sort}</span>
             </label>
@@ -95,9 +95,11 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
         </div>
       </div>
       {/* TRENDING */}
-      {/* flex flex-col mt-10 gap-5 bg-white shadow-sm border border-gray-200 p-4 rounded-xl */}
-      <div className="flex flex-col mt-10 gap-5 bg-gray-100 p-3 rounded-lg">
-        <h1 className="font-bold text-lg mb-2">Trending</h1>
+      {/* flex flex-col mt-10 gap-5 bg-white shadow-sm border border-gray-200 p-4 rounded-xl 
+      -> flex flex-col mt-10 gap-5 bg-gray-100 p-3 rounded-lg
+      */}
+      <div className="flex flex-col mt-10 gap-5 bg-white shadow-sm border border-gray-200 p-4 rounded-lg">
+        <h1 className="font-bold text-base mb-2">Trending</h1>
 
         <div className="flex flex-col divide-y divide-gray-400">
           {trendingPosts
@@ -105,17 +107,17 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
             .map((post, i) => (
             <div key={post.blog_id} className="flex justify-between items-center py-4">
               <div className="flex gap-3">
-                <div className="text-4xl font-bold min-w-[4rem] ">
+                <div className="text-3xl font-bold min-w-[4rem] ">
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="flex flex-col">
                   <span 
-                    className="font-semibold text-gray-700 hover:underline cursor-pointer line-clamp-2 break-words"
+                    className="font-semibold text-sm text-gray-700 cursor-pointer line-clamp-2 break-words hover:text-cyan-500 transition-all duration-200"
                     onClick={() => navigate(`/posts/${post.blog_id}`)}
                   >
                     {post.title}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-xs text-gray-500">
                     {" "}
                     by
                     <Link to={"/test"} className="cursor-pointer truncate max-w-[150px]">
@@ -125,8 +127,11 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
                   </span>
                 </div>
               </div>
-
-              <GoArrowRight className="text-xl" />
+              
+                <GoArrowRight 
+                  className="text-xl cursor-pointer hover:translate-x-1 transition-all duration-200 hover:text-cyan-500" 
+                  onClick={()=>navigate(`/posts/${post.blog_id}`)}
+                />
             </div>
           ))}
         </div>

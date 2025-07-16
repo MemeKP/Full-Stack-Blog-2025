@@ -1,16 +1,21 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
-import { Outlet } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast';
+import React from "react";
+import Navbar from "../components/Navbar";
+import { Outlet } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 const MainLayout = () => {
   return (
-    <div className='px-4 md:px-8 lg:px-16 lx:px-32 sxl:px-64'>
-      {/* <Toaster position='top-center' /> */}
-      <Navbar />
-      <Outlet />
-    </div>
-  )
-}
+    <>
+      <div className="px-2 md:px-4 lg:px-12 xl:px-24">
+          <Navbar />
+      </div>
 
-export default MainLayout
+{/* px-4 md:px-8 lg:px-12 xl:px-24 mx-auto max-w-[1200px] */}
+      <div className="px-4 md:px-8 lg:px-12 xl:px-24 mx-auto max-w-[1200px]">
+        <Outlet />
+      </div>
+    </>
+  );
+};
+
+export default MainLayout;

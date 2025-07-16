@@ -84,15 +84,15 @@ const CommentSection = ({ postId, authorName }) => { //authorName
     return (
         <div className="w-full mx-auto">
             <form onSubmit={handlePost} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4">{isPending ? "Loading..." : error ? "Error" : `Responses(${data.length})`}</h2>
+                <h2 className="text-xl font-semibold mb-4">{isPending ? "Loading..." : error ? "Error" : `Responses(${data.length})`}</h2>
                 {/* FORM INPUT */}
                 <div className="mb-4">
                     <textarea
                         name="desc"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="What's your thoughts ?"
-                        className="w-full min-h-[120px] p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all resize-y"
+                        placeholder="What's your thoughts?"
+                        className="w-full min-h-[120px] p-3 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all resize-y"
                     />
                 </div>
 

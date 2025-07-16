@@ -26,6 +26,7 @@ const fetchPosts = async (
       sort: sortQuery,
     },
   });
+  console.log("📦 response.data:", res.data); // สำคัญ!
   return res.data;
 };
 
@@ -64,9 +65,9 @@ const PostList = () => {
   ?.flatMap((page) => Array.isArray(page?.posts) ? page.posts : [])
   .filter(post => post && post._id) || [];
 
-  console.log("📦 pages:", data?.pages)
+  console.log("pages:", data?.pages)
   console.log(data); //ลองดูผลลัพธ์
-  console.log("🧪 allPosts = ", allPosts);
+  console.log("allPosts = ", allPosts);
   allPosts.forEach((p, i) => {
     if (!p || !p._id) {
       console.warn(`⚠️ Problem at index ${i}:`, p);

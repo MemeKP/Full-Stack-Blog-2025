@@ -72,9 +72,9 @@ const Homepage = () => {
   return (
 
     <AnimationWrapper keyValue="homepage">
-      <div className="mt-4 flex flex-col gap-4">
+      <div className="mt-4 flex flex-col text-sm">
         {/* 1. BREADCRUMB */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <Link to="/">Home</Link>
           <span className='font-bold'>•</span>
           <span className='text-cyan-600'>Blogs and Articles</span>
@@ -84,8 +84,8 @@ const Homepage = () => {
       {/* 2. INTRODUCTION */}
       <section className='py-14'>
         <div className="container mx-auto px-4 text-center">
-          <h1 className='text-9xl font-semibold bg-gradient-to-r from-pink-600 to-cyan-600 bg-clip-text text-transparent'>Post Write</h1>
-          <p className='text-3xl'>A place to share your thoughts.</p>
+          <h1 className='text-8xl font-semibold bg-gradient-to-r from-pink-600 to-cyan-600 bg-clip-text text-transparent'>Post Write</h1>
+          <p className='text-2xl'>A place to share your thoughts.</p>
         </div>
       </section>
 

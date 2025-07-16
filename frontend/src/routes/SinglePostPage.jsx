@@ -51,7 +51,7 @@ const SinglePostPage = () => {
 
         {/* TITLE */}
         {/* Can AI See Beauty */}
-        <h1 className="text-7xl font-extrabold text-center leading-tight bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent mb-4">{data.title}</h1>
+        <h1 className="text-6xl font-extrabold text-center leading-tight bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent mb-4">{data.title}</h1>
 
         {/* VIEW & LIKES */}
         {isPending ? (
@@ -86,8 +86,6 @@ const SinglePostPage = () => {
         </article>
 
         <section className="relative group mb-4 flex flex-col ">
-          <h1 className="text-2xl font-semibold">1. Title</h1>
-          <p className="text-lg leading-relaxed text-justify">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quidem et delectus odit, aspernatur consequatur, reiciendis repudiandae illo temporibus impedit, minus consequuntur ipsam provident doloremque. Aliquid quaerat dolorem nemo quae illum.</p>
           {/* FLOATING COMMENT */}
           <button className="absolute top-0 right-0">
             <LuMessageSquareMore className="text-3xl text-gray-400 hover:text-black duration-200" />
@@ -100,7 +98,7 @@ const SinglePostPage = () => {
         {post_tags.map((tag, i) => (
           <button
             key={i}
-            className="px-3 py-1 rounded-full text-sm font-semibold border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-black transition-all duration-100 shadow-md"
+            className="px-3 py-1 rounded-full text-xs font-semibold border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-black transition-all duration-100 shadow-md"
           // className="px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 text-white hover:brightness-110 transition duration-200"
           >
             #{tag}

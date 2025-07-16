@@ -96,10 +96,10 @@ const SearchBar = () => {
     <form>
       <div
         ref={closeRef}
-        className={`cursor-pointer hover:bg-gray-200 items-center border rounded-full transition-all p-2 inline-flex overflow-hidden ${isOpen ? "w-64" : "w-10 bg-gray-100 justify-center"} shadow-sm`}
+        className={`cursor-pointer hover:bg-gray-200 items-center border rounded-full transition-all p-2 inline-flex overflow-hidden ${isOpen ? "w-64" : "w-9 h-9 bg-gray-100 justify-center"} shadow-sm`}
         onClick={() => setIsOpen(true)}
       >
-        <CiSearch className="text-gray-500 text-xl" />
+        <CiSearch className="text-gray-500 text-lg" />
         {isOpen && (
           <>
             <input

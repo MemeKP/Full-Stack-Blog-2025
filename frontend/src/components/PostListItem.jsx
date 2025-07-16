@@ -10,7 +10,7 @@ const PostListItem = ({ post }) => {
     <div className=" py-4 mt-4 flex flex-col xl:flex-row gap-8">
       {/* image */}
       {post.banner && (
-        <div className="w-full xl:w-1/3 relative ">
+        <div className="w-full xl:w-1/2 relative ">
           {!imgLoaded && (
             <div className="absolute top-0 left-0 w-full h-48 bg-gray-200 animate-pulse rounded-2xl" />
           )}
@@ -29,11 +29,11 @@ const PostListItem = ({ post }) => {
       <div className="flex flex-col gap-3 xl:w-2/3">
         <Link
           to={`${post.blog_id}`}
-          className="text-4xl xl:text-3xl font-semibold leading-snug line-clamp-1"
+          className="text-xl xl:text-xl font-semibold leading-snug line-clamp-1"
         >
           {post.title}
         </Link>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 text-sm">
           <span>Written By </span>
           {post.author && post.author.username ? (
             <Link className="text-cyan-600 hover:underline">
@@ -47,12 +47,10 @@ const PostListItem = ({ post }) => {
           <Link className="text-cyan-600 hover:underline">{post.category}</Link>
           <span>{formatDate(new Date(post.publishedAt), "MMMM, d yyyy")}</span>
         </div>
-        <p>
+        <div className="text-sm">
           {post.desc}
-        </p>
-        <div>
-          <Link to={`/${post.blog_id || 'invalid'}`} className="text-cyan-600 hover:underline">Read More</Link>
         </div>
+        <Link to={`/${post.blog_id || 'invalid'}`} className="text-cyan-600 text-sm hover:underline">Read More</Link>
 
       </div>
     </div>
