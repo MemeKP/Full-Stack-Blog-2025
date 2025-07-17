@@ -14,7 +14,10 @@ const allowedOrigins = [
   "https://full-stack-blog-2025.vercel.app",
   "http://localhost:5173",
   "https://full-stack-blog-2025-git-working-panitas-projects.vercel.app",
-]
+  "https://full-stack-blog-2025-ljjc3my7l-panitas-projects.vercel.app", 
+  "https://full-stack-blog-2025-u77o.vercel.app" //(backend URL ที่ deploy)
+];
+
 // เปิด CORS ก่อน
 app.use(cors({
   origin: function(origin, callback) {
@@ -28,6 +31,25 @@ app.use(cors({
 }));
 
 app.use(express.json())
+    
+app.use("/users", userRouter)
+app.use("/posts", postRouter)
+app.use("/comments", commentRouter)
+
+app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+
+    res.json({
+        message: error.message || "something went wrong!",
+        status: error.status,
+        stack: error.stack,
+    })
+})
+
+app.listen(3000,() => {
+    connectDB()
+    console.log("Server is running!")
+})
 
 // allow cross-origin requests
 // app.use(function(req, res, next) {
@@ -48,24 +70,5 @@ app.use(express.json())
 //   origin: "http://localhost:5173", // หรือ port ที่ frontend ใช้
 //   credentials: true,
 // }));
-    
-app.use("/users", userRouter)
-app.use("/posts", postRouter)
-app.use("/comments", commentRouter)
-
-app.use((error, req, res, next) => {
-    res.status(error.status || 500);
-
-    res.json({
-        message: error.message || "something went wrong!",
-        status: error.status,
-        stack: error.stack,
-    })
-})
-
-app.listen(3000,() => {
-    connectDB()
-    console.log("Server is running!")
-})
 
 
