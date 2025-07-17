@@ -12,7 +12,8 @@ const app = express()
 
 const allowedOrigins = [
   "https://full-stack-blog-2025.vercel.app",
-  "http://localhost:5173"
+  "http://localhost:5173",
+  "https://full-stack-blog-2025-git-working-panitas-projects.vercel.app",
 ]
 // เปิด CORS ก่อน
 app.use(cors({
