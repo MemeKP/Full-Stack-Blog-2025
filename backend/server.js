@@ -10,21 +10,31 @@ import cors from "cors";
 dotenv.config()
 const app = express()
 
+const allowedOrigins = [
+  "https://full-stack-blog-2025.vercel.app",
+  "http://localhost:5173"
+]
 // เปิด CORS ก่อน
 app.use(cors({
-  origin: "http://localhost:5173", // origin ของ frontend (Vite ใช้ port 5173)
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed CORS"))
+    }
+  }, // origin ของ frontend (Vite ใช้ port 5173)
   credentials: true,
 }));
 
 app.use(express.json())
 
 // allow cross-origin requests
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", 
-    "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", 
+//     "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// });
 
 // app.get("/test", (req, res) => {
 //     res.status(200).send("It works!")
