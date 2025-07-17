@@ -21,12 +21,13 @@ const allowedOrigins = [
 // เปิด CORS ก่อน
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+     console.log("Request Origin:", origin); 
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith("https://full-stack-blog-2025")) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed CORS"))
+      callback(new Error("Not allowed by CORS"));
     }
-  }, // origin ของ frontend (Vite ใช้ port 5173)
+  },
   credentials: true,
 }));
 
