@@ -4,21 +4,33 @@ import postRouter from "./routes/post.route.js"
 import commentRouter from "./routes/comment.route.js"
 import connectDB from "./lib/connectDB.js"
 import dotenv from "dotenv";
-import mongoose from "mongoose"
 import cors from "cors";
+import mongoose from "mongoose"
 
 dotenv.config()
 const app = express()
 
-const allowedOrigins = [
-  "https://full-stack-blog-2025.vercel.app",
-  "http://localhost:5173",
-  "https://full-stack-blog-2025-git-working-panitas-projects.vercel.app",
-  "https://full-stack-blog-2025-ljjc3my7l-panitas-projects.vercel.app", 
-  "https://full-stack-blog-2025-u77o.vercel.app" //(backend URL ที่ deploy)
-];
+// const allowedOrigins = [
+//   "https://full-stack-blog-2025.vercel.app",
+//   "http://localhost:5173",
+//   "https://full-stack-blog-2025-git-working-panitas-projects.vercel.app",
+//   "https://full-stack-blog-2025-u77o.vercel.app" // backend URL ที่ deploy
+// ];
 
 // เปิด CORS ก่อน
+app.use(cors({
+  origin: "http://localhost:5173", // port ที่ frontend ใช้
+  credentials: true,
+}));
+
+// mongoose.connect(process.env.DB_LOCATION) // จริงๆ มีใน lib/connectDB แล้ว
+//     .then(()=> console.log("MongoDB conneted!"))
+//     .catch(err => console.error("Mongo error: ", err))
+// app.use(cors({
+//   origin: "http://localhost:5173", // port ที่ frontend ใช้
+//   credentials: true,
+// }));
+/*
 app.use(cors({
   origin: function(origin, callback) {
      console.log("Request Origin:", origin); 
@@ -29,7 +41,7 @@ app.use(cors({
     }
   },
   credentials: true,
-}));
+}));*/
 
 app.use(express.json())
     

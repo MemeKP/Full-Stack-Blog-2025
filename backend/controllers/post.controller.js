@@ -90,7 +90,7 @@ export const getPosts = async (req, res) => {
     console.log("✅ Posts found:", posts.length);
     res.status(200).json({ posts, hasMore });
   } catch (error) {
-    console.error("❌ Error in getPosts:", error);
+    console.error("Error in getPosts:", error);
     res.status(500).json("Failed to fetch posts");
   }
 };

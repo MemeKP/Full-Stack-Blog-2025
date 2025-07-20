@@ -46,10 +46,10 @@ export const getUserLikedPosts = async (req, res) => {
             return res.status(401).json({ error: "User not found!" });
         }
 
-        console.log("✅ Found user:", user.username, "likedPosts:", user.likedPosts);
+        console.log("✅Found user:", user.username, "likedPosts:", user.likedPosts);
         res.status(200).json(user.likedPosts);
     } catch (err) {
-        console.error("🔥 Error in getUserlikedPosts:", err);
+        console.error("Error in getUserlikedPosts:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 }

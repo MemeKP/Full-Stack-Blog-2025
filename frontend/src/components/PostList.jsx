@@ -17,7 +17,8 @@ const fetchPosts = async (
     pathname,
     categoryQuery,
   });
-  const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
+  //`${import.meta.env.VITE_API_URL}/posts`
+  const res = await axios.get(`/api/posts`, {
     params: {
       page: pageParam,
       limit: pathname === "/" ? 2 : 10,
