@@ -5,41 +5,15 @@ import commentRouter from "./routes/comment.route.js"
 import connectDB from "./lib/connectDB.js"
 import dotenv from "dotenv";
 import cors from "cors";
-import mongoose from "mongoose"
 
 dotenv.config()
 const app = express()
 
-const allowedOrigins = [
-  "https://full-stack-blog-2025.vercel.app",
-  "http://localhost:5173",
-  "https://full-stack-blog-2025-git-working-panitas-projects.vercel.app",
-  "https://full-stack-blog-2025-u77o.vercel.app" // backend URL ที่ deploy
-];
-
 // เปิด CORS ก่อน
-// app.use(cors({
-//   origin: "http://localhost:5173", // port ที่ frontend ใช้
-//   credentials: true,
-// }));
-
 app.use(cors({
-  origin: ["https://full-stack-blog-2025.vercel.app", "http://localhost:5173"],
+  origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173"],
   credentials: true
 }));
-
-
-// app.use(cors({
-//   origin: function(origin, callback) {
-//      console.log("Request Origin:", origin); 
-//     if (!origin || allowedOrigins.includes(origin) || origin.startsWith("https://full-stack-blog-2025")) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   credentials: true,
-// }));
 
 app.use(express.json())
     
