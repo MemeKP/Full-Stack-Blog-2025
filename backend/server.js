@@ -11,15 +11,15 @@ const app = express()
 
 // เปิด CORS ก่อน
 app.use(cors({
-  origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173", '*'],
+  origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173", "*"],
   credentials: true
 }));
 
 app.use(express.json())
     
-app.use("/users", userRouter)
-app.use("/posts", postRouter)
-app.use("/comments", commentRouter)
+app.use("/api/users", userRouter)
+app.use("/api/posts", postRouter)
+app.use("/api/comments", commentRouter)
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500);
