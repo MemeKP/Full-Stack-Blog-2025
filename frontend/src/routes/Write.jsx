@@ -12,7 +12,7 @@ import { IKContext, IKUpload } from 'imagekitio-react'
 const authenticator = async () => {
   try {
     // Perform the request to the upload authentication endpoint.
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/posts/upload-auth`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/upload-auth`);
     if (!response.ok) {
       // If the server response is not successful, extract the error text for debugging.
       const errorText = await response.text();
@@ -124,11 +124,11 @@ const Write = () => {
 
     const token = await getFirebaseToken();
 
-    console.log("banner right before submit:", banner);
-    console.log("posting to:", import.meta.env.VITE_API_URL + "/posts")
-    console.log("banner length", banner?.length || banner?.size);
+    // console.log("banner right before submit:", banner);
+    // console.log("posting to:", import.meta.env.VITE_API_URL + "/posts")
+    // console.log("banner length", banner?.length || banner?.size);
 
-    axios.post(import.meta.env.VITE_API_URL + "/posts",
+    axios.post(import.meta.env.VITE_API_URL + "/api/posts",
       blogObj, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -161,8 +161,8 @@ const Write = () => {
       // console.log("Firebase Token:", token);
 
       const url = newPosts._id
-        ? `${import.meta.env.VITE_API_URL}/posts/${newPosts._id}` // PUT
-        : `${import.meta.env.VITE_API_URL}/posts`;               // POST
+        ? `${import.meta.env.VITE_API_URL}/api/posts/${newPosts._id}` // PUT
+        : `${import.meta.env.VITE_API_URL}/api/posts`;               // POST
 
       const method = newPosts._id ? 'put' : 'post';
 

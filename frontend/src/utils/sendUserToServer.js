@@ -13,7 +13,7 @@ export const sendUserToServer = async (user) => {
     });
     // console.log("👉 Token:", token);
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/user`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

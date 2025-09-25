@@ -10,7 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 //Fetch blog page
 const fetchComments = async (postId) => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/comments/${postId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/${postId}`);
     return res.data ?? [];
 };
 
@@ -37,7 +37,7 @@ const CommentSection = ({ postId, authorName }) => { //authorName
     const mutation = useMutation({
         mutationFn: async (newComment) => {
             const token = await getFirebaseToken();
-            return axios.post(`${import.meta.env.VITE_API_URL}/comments/${postId}`, newComment, {
+            return axios.post(`${import.meta.env.VITE_API_URL}/api/comments/${postId}`, newComment, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
