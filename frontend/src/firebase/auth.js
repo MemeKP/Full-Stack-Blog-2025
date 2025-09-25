@@ -20,7 +20,7 @@ export const dosignInWithEmailAndPassword = async (email, password) => {
 
         const token = await user.getIdToken();
 
-        await fetch("http://localhost:3000/users/user", {
+        await fetch(`${import.meta.env.VITE_API_URL}/users/user`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export const doSignInWithGoogle = async () => {
     const token = await user.getIdToken();
 
     // ส่งไป backend
-    await fetch("http://localhost:3000/users/user", {
+    await fetch(`${import.meta.env.VITE_API_URL}/users/user`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

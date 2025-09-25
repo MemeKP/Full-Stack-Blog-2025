@@ -3,6 +3,8 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 export const getPosts = async (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
   const page = parseInt(req.query.page) || 1;
   const noLimit = req.query.noLimit === "true";
@@ -88,7 +90,7 @@ export const getPosts = async (req, res) => {
     console.log("✅ Posts found:", posts.length);
     res.status(200).json({ posts, hasMore });
   } catch (error) {
-    console.error("❌ Error in getPosts:", error);
+    console.error("Error in getPosts:", error);
     res.status(500).json("Failed to fetch posts");
   }
 };
