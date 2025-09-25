@@ -23,7 +23,7 @@ const Comment = ({ comment, postId }) => {
   const handleDelete = async (commentId) => {
     try {
       const token = await getFirebaseToken();
-      await axios.delete(`${import.meta.env.VITE_API_URL}/comments/${commentId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/comments/${commentId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

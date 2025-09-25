@@ -14,7 +14,7 @@ import PostMenuActions from "../components/PostMenuActions";
 
 //Fetch blog page
 const fetchPost = async (blog_id) => {
-  const res = axios.get(`${import.meta.env.VITE_API_URL}/posts/${blog_id}`);
+  const res = axios.get(`${import.meta.env.VITE_API_URL}/api/posts/${blog_id}`);
   return (await res).data;
 }
 

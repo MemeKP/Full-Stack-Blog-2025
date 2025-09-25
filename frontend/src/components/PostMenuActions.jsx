@@ -47,7 +47,7 @@ const PostMenuActions = ({ post }) => {
         enabled: ready, // เริ่ม query ได้ก็ต่อเมื่อพร้อม
         queryFn: async () => {
             const token = await getFirebaseToken()
-            return axios.get(`${import.meta.env.VITE_API_URL}/users/saved`, {
+            return axios.get(`${import.meta.env.VITE_API_URL}/api/users/saved`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -61,7 +61,7 @@ const PostMenuActions = ({ post }) => {
         enabled: !!currentUser,
         queryFn: async () => {
             const token = await getFirebaseToken();
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/liked`, {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/liked`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return res.data; // array of blog_id
@@ -75,7 +75,7 @@ const PostMenuActions = ({ post }) => {
         enabled: !!currentUser,
         queryFn: async () => {
             const token = await getFirebaseToken();
-            return axios.get(`${import.meta.env.VITE_API_URL}/posts/like`, {
+            return axios.get(`${import.meta.env.VITE_API_URL}/api/posts/like`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -101,7 +101,7 @@ const PostMenuActions = ({ post }) => {
     const saveMutation = useMutation({
         mutationFn: async () => {
             const token = await getFirebaseToken() // ตรงนี้ทำให้ช้า เพราะต้องรอ firebase token
-            return axios.patch(`${import.meta.env.VITE_API_URL}/users/save`, {
+            return axios.patch(`${import.meta.env.VITE_API_URL}/api/users/save`, {
                 postId: post.blog_id,
             },
                 {
@@ -125,7 +125,7 @@ const PostMenuActions = ({ post }) => {
     const deleteMutation = useMutation({
         mutationFn: async () => {
             const token = await getFirebaseToken()
-            return axios.delete(`${import.meta.env.VITE_API_URL}/users/${post.blog_id}`, {
+            return axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${post.blog_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -156,7 +156,7 @@ const PostMenuActions = ({ post }) => {
     const likeMutation = useMutation({
         mutationFn: async () => {
             const token = await getFirebaseToken();
-            return axios.patch(`${import.meta.env.VITE_API_URL}/posts/like`, {
+            return axios.patch(`${import.meta.env.VITE_API_URL}/api/posts/like`, {
                 postId: post.blog_id,
             }, {
                 headers: { Authorization: `Bearer ${token}` },

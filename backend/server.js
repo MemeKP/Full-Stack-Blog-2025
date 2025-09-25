@@ -5,47 +5,73 @@ import commentRouter from "./routes/comment.route.js"
 import connectDB from "./lib/connectDB.js"
 import dotenv from "dotenv";
 import cors from "cors";
-import mongoose from "mongoose"
 
 dotenv.config()
-const app = express()
+const app = express();
 
-const allowedOrigins = [
-  "https://full-stack-blog-2025.vercel.app",
-  "http://localhost:5173",
-  "https://full-stack-blog-2025-git-working-panitas-projects.vercel.app",
-  "https://full-stack-blog-2025-u77o.vercel.app" // backend URL ที่ deploy
-];
-
-// เปิด CORS ก่อน
+// // เปิด CORS ก่อน
 // app.use(cors({
-//   origin: "http://localhost:5173", // port ที่ frontend ใช้
-//   credentials: true,
+//   origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173"],
+//   credentials: true
 // }));
 
-app.use(cors({
-  origin: ["https://full-stack-blog-2025.vercel.app", "http://localhost:5173"],
-  credentials: true
+// app.use(express.json())
+    
+// app.use("/users", userRouter)
+// app.use("/posts", postRouter)
+// app.use("/comments", commentRouter)
+// เปิด CORS ก่อน 
+app.use(cors({ 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      "https://blog-app-sigma-topaz.vercel.app", // Production URL
+      "http://localhost:5173", // Local development
+      /^https:\/\/.*-panitas-projects\.vercel\.app$/ // Preview deployments
+    ];
+    
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return origin === allowedOrigin;
+      }
+      if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ]
 }));
 
+// app.options('*', cors());
 
-// app.use(cors({
-//   origin: function(origin, callback) {
-//      console.log("Request Origin:", origin); 
-//     if (!origin || allowedOrigins.includes(origin) || origin.startsWith("https://full-stack-blog-2025")) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   credentials: true,
-// }));
+app.use(express.json());
 
-app.use(express.json())
-    
-app.use("/users", userRouter)
-app.use("/posts", postRouter)
-app.use("/comments", commentRouter)
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Query:`, req.query);
+  next();
+});
+     
+app.use("/api/users", userRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500);

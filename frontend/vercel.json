@@ -1,3 +1,8 @@
 {
-    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-  }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://full-stack-blog-2025.vercel.app/api/$1"
+    }
+  ]
+}
