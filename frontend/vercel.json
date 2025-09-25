@@ -1,9 +1,8 @@
 {
-  "version": 2,
   "rewrites": [
-     {
-      "source": "/api/:match*",
-      "destination": "https://full-stack-blog-2025-backend.vercel.app/:match*"
+    {
+      "source": "/api/:path*",
+      "destination": "https://full-stack-blog-2025-backend.vercel.app/:path*"
     }
   ]
 }
