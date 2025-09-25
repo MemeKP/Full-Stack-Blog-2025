@@ -7,19 +7,40 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 dotenv.config()
-const app = express()
+const app = express();
 
-// เปิด CORS ก่อน
-app.use(cors({
-  origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173", "*"],
-  credentials: true
+// // เปิด CORS ก่อน
+// app.use(cors({
+//   origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173"],
+//   credentials: true
+// }));
+
+// app.use(express.json())
+    
+// app.use("/users", userRouter)
+// app.use("/posts", postRouter)
+// app.use("/comments", commentRouter)
+// เปิด CORS ก่อน 
+app.use(cors({ 
+  origin: [
+    "https://blog-app-sigma-topaz.vercel.app", 
+    "http://localhost:5173"
+  ], 
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ]
 }));
 
-app.use(express.json())
-    
-app.use("/api/users", userRouter)
-app.use("/api/posts", postRouter)
-app.use("/api/comments", commentRouter)
+     
+app.use("/api/users", userRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500);

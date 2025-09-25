@@ -11,9 +11,9 @@ export const sendUserToServer = async (user) => {
       name: user.displayName || user.email.split('@')[0],
       photoURL: user.photoURL,
     });
-    console.log("👉 Token:", token);
+    // console.log("👉 Token:", token);
 
-    const res = await fetch("http://localhost:3000/users/user", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
