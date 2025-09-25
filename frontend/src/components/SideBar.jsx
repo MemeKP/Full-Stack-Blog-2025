@@ -12,7 +12,7 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
   const { data: trendingPosts } = useQuery({
     queryKey: ["trendingPosts"],
     queryFn: async () => {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts?sort=likes&limit=5&noLimit=true`)
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts?sort=likes&limit=5&noLimit=true`)
         return res.data.posts; // หรือ res.data แล้ว map .posts
     }
   })

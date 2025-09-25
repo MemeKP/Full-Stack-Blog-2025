@@ -22,10 +22,33 @@ const app = express();
 // app.use("/comments", commentRouter)
 // เปิด CORS ก่อน 
 app.use(cors({ 
-  origin: [
-    "https://blog-app-sigma-topaz.vercel.app", 
-    "http://localhost:5173"
-  ], 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      "https://blog-app-sigma-topaz.vercel.app", // Production URL
+      "http://localhost:5173", // Local development
+      /^https:\/\/.*-panitas-projects\.vercel\.app$/ // Preview deployments
+    ];
+    
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return origin === allowedOrigin;
+      }
+      if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
@@ -37,6 +60,14 @@ app.use(cors({
   ]
 }));
 
+// app.options('*', cors());
+
+app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Query:`, req.query);
+  next();
+});
      
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);

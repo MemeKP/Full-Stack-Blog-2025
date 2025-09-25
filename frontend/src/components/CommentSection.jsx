@@ -10,7 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 //Fetch blog page
 const fetchComments = async (postId) => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/comments/${postId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/${postId}`);
     return res.data ?? [];
 };
 
@@ -37,7 +37,7 @@ const CommentSection = ({ postId, authorName }) => { //authorName
     const mutation = useMutation({
         mutationFn: async (newComment) => {
             const token = await getFirebaseToken();
-            return axios.post(`${import.meta.env.VITE_API_URL}/comments/${postId}`, newComment, {
+            return axios.post(`${import.meta.env.VITE_API_URL}/api/comments/${postId}`, newComment, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -118,96 +118,3 @@ const CommentSection = ({ postId, authorName }) => { //authorName
 }
 
 export default CommentSection
-
-{/* <div className="mt-8 space-y-6">
-                {comments.map((comment) => (
-                    <Comment key={comment._id} {...comment} />
-                ))}
-            </div> */}
-
-// const handlePost = async () => {
-//     if (!getFirebaseToken) {
-//         return toast.error("Please login first to leave a comment")
-//     }
-//     if (!newComment.length) {
-//         return toast.error("Write something to leave a comment...")
-//     }
-
-//     try {
-//         const token = await getFirebaseToken();
-//         await axios.post(`${import.meta.env.VITE_API_URL}/comments/${postId}`, {
-//             // _id: postId,
-//             comment: newComment,
-
-//         }, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         })
-//         toast.success("Comment post!")
-//         setNewComment("")
-//         //  data.commented_by = {""}
-
-//         queryClient.invalidateQueries({ queryKey: ["comments", postId] }) // refresh comment
-//     } catch (error) {
-//         console.error("Post comment error: ", error)
-//         toast.error("Fail to post comment!")
-//     }
-// }
-
-// const [comments, setComments] = useState([
-//     {
-//         id: 1,
-//         profile: {
-//             name: "Hinata Shoyo",
-//             avatar: "profile.jpg",
-//             userId: "hinata"
-//         },
-//         date: "May 7",
-//         content: "I agreed with you.",
-//         likes: 28,
-//         replies: []
-//     },
-//     {
-//         id: 2,
-//         profile: {
-//             name: "KodzuKen",
-//             avatar: "kenmaprofile.jpg",
-//             userId: "kenma"
-//         },
-//         date: "May 7",
-//         content: "If shoyo say so.",
-//         likes: 30,
-//         replies: []
-//     },
-//     {
-//         id: 3,
-//         profile: {
-//             name: "Kuroo Tetsuro",
-//             avatar: "kuroprofile.jpg",
-//             userId: "kuroo"
-//         },
-//         date: "May 8",
-//         content: "WOW!!",
-//         likes: 26,
-//         replies: []
-//     },
-// ])
-
-// const handlePost = () => {
-//     if (newComment.trim() === "") return;
-//     const newEntry = {
-//         id: comments.length + 1,
-//         profile: {
-//             name: "Anonymous",
-//             avatar: "post2.jpg",
-//             userId: "anonymous"
-//         },
-//         date: "Just Now",
-//         content: newComment,
-//         Likes: 0,
-//         replies: [],
-//     };
-//     setComments([...comments, newEntry]);
-//     setNewComment("");
-// }

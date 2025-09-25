@@ -47,7 +47,7 @@ const PostMenuActions = ({ post }) => {
         enabled: ready, // เริ่ม query ได้ก็ต่อเมื่อพร้อม
         queryFn: async () => {
             const token = await getFirebaseToken()
-            return axios.get(`${import.meta.env.VITE_API_URL}/users/saved`, {
+            return axios.get(`${import.meta.env.VITE_API_URL}/api/users/saved`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
