@@ -11,7 +11,7 @@ const app = express()
 
 // เปิด CORS ก่อน
 app.use(cors({
-  origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173"],
+  origin: ["https://blog-app-sigma-topaz.vercel.app", "http://localhost:5173", '*'],
   credentials: true
 }));
 
