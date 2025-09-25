@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://full-stack-blog-2025.vercel.app/api/$1"
+      "destination": "https://full-stack-blog-2025.vercel.app/$1"
     }
   ]
 }
