@@ -9,11 +9,11 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
 
-  const { data: trendingPosts } = useQuery({
-    queryKey: ["trendingPosts"],
+  const { data: trending } = useQuery({
+    queryKey: ["trending"],
     queryFn: async () => {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts?sort=likes&limit=5&noLimit=true`)
-        return res.data.posts; // หรือ res.data แล้ว map .posts
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts?sort=trending&limit=5&noLimit=true`)
+      return res.data.posts; // หรือ res.data แล้ว map .posts
     }
   })
 
@@ -35,10 +35,10 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
 
   const handleSortChange = (e) => {
     if (searchParams.get('sort') !== e.target.value) {
-        setSearchParams({
-            ...Object.fromEntries(searchParams.entries()),
-            sort: e.target.value
-        })
+      setSearchParams({
+        ...Object.fromEntries(searchParams.entries()),
+        sort: e.target.value
+      })
     }
   };
 
@@ -59,12 +59,10 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
             <button
               name="category"
               onClick={handleFilterChange}
-              className={`tag px-2 py-2 rounded-full text-xs font-medium transition-colors duration-200
-                                            ${
-                                              pageState === topic.toLowerCase()
-                                                ? "bg-cyan-500 text-white"
-                                                : "bg-gray-200 hover:bg-gray-300"
-                                            }`}
+              className={`tag px-2 py-2 rounded-full text-xs font-medium transition-colors duration-200 ${pageState === topic.toLowerCase()
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+                }`}
               key={i}
             >
               {topic}
@@ -95,45 +93,41 @@ const SideBar = ({ pageState, loadBlogByCategory }) => {
         </div>
       </div>
       {/* TRENDING */}
-      {/* flex flex-col mt-10 gap-5 bg-white shadow-sm border border-gray-200 p-4 rounded-xl 
-      -> flex flex-col mt-10 gap-5 bg-gray-100 p-3 rounded-lg
-      */}
       <div className="flex flex-col mt-10 gap-5 bg-white shadow-sm border border-gray-200 p-4 rounded-lg">
         <h1 className="font-bold text-base mb-2">Trending</h1>
-
         <div className="flex flex-col divide-y divide-gray-400">
-          {trendingPosts
+          {trending
             ?.filter(post => post && post.blog_id)
             .map((post, i) => (
-            <div key={post.blog_id} className="flex justify-between items-center py-4">
-              <div className="flex gap-3">
-                <div className="text-3xl font-bold min-w-[4rem] ">
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <div className="flex flex-col">
-                  <span 
-                    className="font-semibold text-sm text-gray-700 cursor-pointer line-clamp-2 break-words hover:text-cyan-500 transition-all duration-200"
-                    onClick={() => navigate(`/posts/${post.blog_id}`)}
-                  >
-                    {post.title}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {" "}
-                    by
-                    <Link to={"/test"} className="cursor-pointer truncate max-w-[150px]">
+              <div key={post.blog_id} className="flex justify-between items-center py-4">
+                <div className="flex gap-3">
+                  <div className="text-3xl font-bold min-w-[4rem] ">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      className="font-semibold text-sm text-gray-700 cursor-pointer line-clamp-2 break-words hover:text-cyan-500 transition-all duration-200"
+                      onClick={() => navigate(`/posts/${post.blog_id}`)}
+                    >
+                      {post.title}
+                    </span>
+                    <span className="text-xs text-gray-500">
                       {" "}
-                      {post.author?.username || 'Unknown'}
-                    </Link>
-                  </span>
+                      by
+                      <Link to={"/test"} className="cursor-pointer truncate max-w-[150px]">
+                        {" "}
+                        {post.author?.username || 'Unknown'}
+                      </Link>
+                    </span>
+                  </div>
                 </div>
-              </div>
-              
-                <GoArrowRight 
-                  className="text-xl cursor-pointer hover:translate-x-1 transition-all duration-200 hover:text-cyan-500" 
-                  onClick={()=>navigate(`/posts/${post.blog_id}`)}
+
+                <GoArrowRight
+                  className="text-xl cursor-pointer hover:translate-x-1 transition-all duration-200 hover:text-cyan-500"
+                  onClick={() => navigate(`/posts/${post.blog_id}`)}
                 />
-            </div>
-          ))}
+              </div>
+            ))}
         </div>
       </div>
     </div>

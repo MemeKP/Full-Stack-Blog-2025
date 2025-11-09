@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { format as formatDate } from 'date-fns';
 import { useState } from "react"
 

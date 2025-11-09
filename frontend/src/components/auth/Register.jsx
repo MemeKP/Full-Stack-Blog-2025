@@ -6,7 +6,7 @@ import { sendUserToServer } from '../../utils/sendUserToServer.js';
 import { doCreateUserWithEmailPassword } from '../../firebase/auth.js'
 const Register = () => {
 
-    // const navigate = useNavigate()
+    const navigate = useNavigate()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -29,6 +29,7 @@ const Register = () => {
                 await doCreateUserWithEmailPassword(email, password);
                 const user = getAuth().currentUser;
                 await sendUserToServer(user);
+                navigate('/')
             } catch (err) {
                 setErrorMessage("Registration failed");
                 console.error(err);

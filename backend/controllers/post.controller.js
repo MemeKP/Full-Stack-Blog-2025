@@ -4,18 +4,15 @@ import User from "../models/user.model.js";
 
 export const getPosts = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
-
   /*เพิ่ม page, limit เพื่อทำ infinite scroll */
   const page = parseInt(req.query.page) || 1;
   const noLimit = req.query.noLimit === "true";
-  // const limit = noLimit ? 0 : parseInt(req.query.limit) || 5;
   const limit = req.query.limit ? parseInt(req.query.limit) : (noLimit ? 0 : 5);
   const search = req.query.search || "";
   const category = req.query.category?.trim().toLowerCase() || "";
   const sort = req.query.sort || "newest"; // ให้ defult เป็น newest
   const featured = req.query.featured;
 
-  // const {category} = req.query; // หรือ req.query.category || '';
   const query = {
     draft: false, // ดึงเฉพาะโพสต์ที่ publish แล้ว พวก test slug test postman postจะไม่เห็น
   };
@@ -53,20 +50,29 @@ export const getPosts = async (req, res) => {
         sortObj = { visit: -1 };
         break;
       case "trending":
-        sortObj = { visit: -1 };
-        query.publishedAt = {
-          $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
-        };
+        sortObj = { 'activity.total_likes': -1};
+        // // เงื่อนไขเวลา
+        // const oneWeekAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
+        // const MonthsAgo = new Date(new Date().getTime() - 90 * 24 * 60 * 60 * 1000);
+        // const recentPostCount = await Post.countDocuments({
+        //   ...finalQuery,
+        //   publishedAt: { $gte: oneWeekAgo }
+        // });
+        // // ถ้าไม่มีโพสต์ใน 7 วัน ให้ขยายเป็น 90 วัน
+        // if (recentPostCount === 0) {
+        //   query.publishedAt = { $gte: MonthsAgo };
+        //   console.log("No posts in 7 days, extending to 30 days");
+        // } else {
+        //   query.publishedAt = { $gte: oneWeekAgo };
+        // }
         break;
       default:
         break;
     }
   }
-
   if (featured) {
     query.isFeatured = true;
   }
-
   const finalQuery = {
     ...query,
     ...searchQuery,
@@ -77,7 +83,7 @@ export const getPosts = async (req, res) => {
   console.log(" Final MongoDB query:", JSON.stringify(finalQuery, null, 2));
   try {
     const posts = await Post.find(finalQuery)
-      .populate("author", "username")
+      .populate("author", 'username profile_img uid')
       .limit(limit) // ถ้า limit = 0 จะไม่จำกัด
       .skip((page - 1) * limit)
       .sort(sortObj); //เรียงจาก post ล่าสุดก่อน
@@ -281,7 +287,6 @@ export const likePost = async (req, res) => {
   }
 };
 
-// GET /posts/:postId/likes
 export const getPostLikes = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -298,148 +303,3 @@ export const getPostLikes = async (req, res) => {
     res.status(500).json("Internal server error");
   }
 };
-
-// export const likePost = async (req, res) => {
-//   try {
-//     const firebaseUid = req.user.uid;
-//     if (!firebaseUid) {
-//       return res.status(401).json("User not authenticated!")
-//     }
-
-//     const postId = req.body.postId
-//     if (!postId) {
-//       return res.status(404).json("Post not found!")
-//     }
-
-//     const user = await User.findOne({ uid: firebaseUid });
-//     if (!user) {
-//       return res.status(404).json("User not found!")
-//     }
-
-//     const post = await Post.findOne({ blog_id: postId });
-//     if (!post.likedBy) post.likedBy = [];
-
-//     const isLiked = post.likedBy.includes(firebaseUid);
-//     // const isLiked = user.likedBy.some((p) => p === postId)
-//     console.log('postid: ', postId)
-//     // if (isLiked) {
-//     //   post.likedBy.pull(firebaseUid);
-//     //   user.likedPosts = user.likedPosts.filter(p => p !== postId);
-//     // } else {
-//     //   post.likedBy.push(firebaseUid);
-//     //   user.likedPosts.push(postId);
-//     // }
-//     if (!isLiked) {
-//       await Post.findByIdAndUpdate(post._id, {
-//         $push: { likedBy: firebaseUid}
-//       })
-//     } else {
-//       await Post.findByIdAndUpdate(post._id), {
-//         $pull: { likedBy: firebaseUid}
-//       }
-//     }
-
-//     await post.save();
-//     await user.save();
-
-//     console.log(`✔ ${firebaseUid} ${isLiked ? "unliked" : "liked"} post: ${postId}`);
-//     res.status(200).json(isLiked ? "Unliked" : "Liked");
-//   } catch (err) {
-//     console.error("Like Error:", err);
-//     res.status(500).json("Internal Server Error");
-//   }
-// };
-
-// //generate unique slug -> no need
-// const generateUniqueSlug = async (title, desiredSlug = null) => {
-//     const baseSlug = desiredSlug
-//         ? slugify(desiredSlug, { lower: true, strict: true })
-//         : slugify(title, { lower: true, strict: true });
-
-//     let slug = baseSlug;
-//     let counter = 2;
-
-//     while (await Post.findOne({ slug })) {
-//         slug = `${baseSlug}-${counter}`;
-//         counter++;
-//     }
-
-//     return slug;
-// };
-
-// export const createPost = async (req, res) => {
-//     // let authorId = req.user;
-//     let { title, desc, banner, category, tags, content, draft } = req.body;
-
-//     if (!title.length) {
-//         return res.status(403).json({ error: "You must provide a title to publish the blog" })
-//     }
-
-//     if (!desc) {
-//         return res.status(403).json({ error: "You must provide a description to publish the blog" })
-//     }
-
-//     let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, "-").trim() + nanoid();
-//     console.log(blog_id)
-
-//     const newPost = new Post({
-//         title,
-//         desc,
-//         banner,
-//         content,
-//         tags,
-//         author: authorId,
-//         category,
-//         // slug,
-//         blog_id,
-//         draft: Boolean(draft),
-//         publishedAt: draft ? null : new Date(),
-//     });
-
-//     const savedPost = await newPost.save();
-//     res.status(201).json(savedPost);
-// }
-// export const createPost = async (req, res) => {
-//     const newPost = new Post(req.body)
-
-//     const post = await newPost.save();
-//     res.status(200).json(post)
-// }
-
-// export const createPost = async (req, res) => {
-//     console.log("🚨 [CREATE POST] Payload:", req.body);
-//     try {
-//         const { title } = req.body;
-
-//         const slug = await generateUniqueSlug(title || "untitled", req.body.slug);
-//         const newPost = new Post({ ...req.body, slug });
-
-//         const post = await newPost.save();
-//         res.status(200).json(post);
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Failed to create post" });
-//     }
-// };
-// export const createPost = async (req, res) => {
-//     try {
-//         const { title, slug, ...rest } = req.body;
-
-//         let finalSlug = slug;
-//         if (!finalSlug || finalSlug === 'null') {
-//             finalSlug = await generateUniqueSlug(title);
-//         }
-
-//         const newPost = new Post({
-//             ...rest,
-//             title,
-//             slug: finalSlug,
-//         });
-
-//         const savedPost = await newPost.save();
-//         res.status(201).json(savedPost);
-//     } catch (err) {
-//         console.error("Error creating post:", err);
-//         res.status(500).json({ message: 'Failed to create post' });
-//     }
-// };

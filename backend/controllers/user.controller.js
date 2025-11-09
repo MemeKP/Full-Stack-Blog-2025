@@ -1,10 +1,70 @@
 import User from "../models/user.model.js"
+import Post from "../models/post.model.js";
+
+export const getUser = async (req, res) => {
+    try {
+        const firebaseUid = req.params.uid;
+        const user = await User.findOne({ uid: firebaseUid }).select('-password -__v').lean();
+
+        if (!user) {
+            return res.status(404).json({ message: "user not found!" })
+        }
+
+        res.status(200).json(user)
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: "Invalid user ID format." });
+        }
+        res.status(500).json({ message: "Internal Server Error: Could not retrieve user data." });
+    }
+}
+
+export const getPostsByUserId = async (req, res) => {
+    const firebaseUid = req.params.uid;
+    const category = req.query.category; // mypost/bookmark
+
+    try {
+        const userDoc = await User.findOne({ uid: firebaseUid }).select('_id savedPosts').lean();
+        if (!userDoc) {
+            return res.status(404).json({ message: "User not found in database." });
+        }
+        const mongooseUserId = userDoc._id;
+        let query = {};
+        let projection = '-__v';
+        if (category === 'mypost') {
+            query = { author: mongooseUserId };
+
+        } else if (category === 'bookmark') {
+            if (!userDoc.savedPosts || userDoc.savedPosts.length === 0) {
+                return res.status(200).json([]);
+            }
+          query = { blog_id: { $in: userDoc.savedPosts } };
+        } else {
+            return res.status(400).json({ message: "Invalid blog category specified." });
+        }
+
+        const blogs = await Post.find(query)
+            .select(projection)
+            .populate({
+                path: 'author',
+                select: 'username profile_img uid'
+            })
+            .sort({ publishedAt: -1 })
+            .lean();
+
+        res.status(200).json(blogs);
+
+    } catch (error) {
+        console.error("Error fetching user blogs:", error);
+        res.status(500).json({ message: "Internal Server Error: Could not retrieve blog data." });
+    }
+};
 
 export const createOrUpdateUser = async (req, res) => {
     try {
         const { uid, email, photoURL, name, displayName } = req.user;
-
-        // Fallback: ถ้าไม่มี name/displayName ให้ใช้ email prefix
+        // ถ้าไม่มี name/displayName ใช้ email prefix
         const username = name || displayName || email?.split("@")[0];
 
         if (!username) {
@@ -21,7 +81,7 @@ export const createOrUpdateUser = async (req, res) => {
         } else {
             user = await User.create({
                 uid,
-                username, // ต้องไม่ undefined
+                username, 
                 email,
                 profile_img: photoURL,
             });

@@ -83,12 +83,14 @@ app.use((error, req, res, next) => {
     })
 })
 
-// app.listen(3000,() => {
-//     connectDB()
-//     console.log("Server is running!")
-// })
+/**FOR DEV */
+app.listen(3000,() => {
+    connectDB()
+    console.log("Server is running!")
+})
 
-connectDB()
-    console.log("Server is running!");
+/**FOR DEPLOY */
+// connectDB()
+//  console.log("Server is running!");
 
 export default app;

@@ -7,7 +7,8 @@ const InPageNavigation = ({
   routes, 
   defaultHidden = [], 
   defaultActiveIndex = 0, 
-  children
+  children,
+  onTabChange 
 }) => {
 
   activeTabLineRef = useRef(); //ต้องใช้ใน homepage ด้วย (update hr)
@@ -26,6 +27,9 @@ const InPageNavigation = ({
     // and reposition the active tab indicator (the bottom black underline)
     // to match the clicked button's offset and width.
     setinPageNavIndex(i);
+    if (onTabChange) {
+      onTabChange(routes[i]);
+    }
   }
 
   /*ใช้ useEffect hook ให้มัน run it self after rerending เพื่อให้ทุกครั้งที่รีหน้า page ใหม่แล้วยังมีเส้น hr สีดำอยู่ (คล้ายๆกับทำให้มันเป็นactive)

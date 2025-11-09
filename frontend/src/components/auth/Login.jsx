@@ -22,7 +22,7 @@ const Login = () => {
                 await dosignInWithEmailAndPassword(email, password);
                 const user = getAuth().currentUser;
                 await sendUserToServer(user);
-                // navigate("/home")
+                navigate("/")
             } catch (err) {
                 setErrorMessage("Login failed");
                 console.error(err);
@@ -40,7 +40,7 @@ const Login = () => {
                 const result = await doSignInWithGoogle();
                 const user = result.user;
                 await sendUserToServer(user);
-                navigate("/home"); 
+                navigate("/"); 
             } catch (err) {
                 setErrorMessage("Google login failed");
                 console.error(err);

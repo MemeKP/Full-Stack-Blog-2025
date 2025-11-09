@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import IKImageWrapper from "./IKImageWrapper";
 import SearchBar from "./SearchBar";
 import { Link, useSearchParams } from "react-router-dom";
-import { useSearch } from "../context/SearchContext";
 import { useAuth } from "../context/authContext/userAuthContext";
 import { useEffect } from "react";
 
@@ -35,9 +34,8 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      // ใช้ logout จาก context ถ้ามี
-      await logout(); // ต้องเพิ่ม logout ใน context
-      // หรือ redirect / ล้าง user จาก state เป็นต้น
+      await logout(); 
+      // redirect / ล้าง user จาก state เป็นต้น
       window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed:", error);
@@ -48,7 +46,6 @@ const Navbar = () => {
     <div className="w-full h-15 md:h-20 flex items-center justify-between">
       {/* LOGO */}
       <Link to="/" className="flex items-center gap-4 text-base font-bold">
-        {/* <IKImage urlEndpoint={urlEndpoint} path='\logo.png' className='w-12 h-12' alt='PW Logo'/> */}
         <IKImageWrapper src="logo.png" className="w-10 h-10" alt="PW Logo" />
         <span>PW Blog</span>
       </Link>
@@ -63,13 +60,13 @@ const Navbar = () => {
         </div>
         {/* MOBILE LINK LIST */}
         <div
-          className={`w-full h-screen flex flex-col items-center justify-center absolute gap-8 font-medium text-lg top-16 transition-all ease-in-out ${
+          className={`w-full h-screen flex flex-col items-center justify-center absolute gap-8 font-medium text-lg top-10 transition-all ease-in-out z-[999] ${
             open ? "-right-0 bg-slate-200" : "-right-[100%]"
           }`}
         >
           <Link to="/">Home</Link>
           <Link to="/write">Write</Link>
-          <Link to="/">About</Link>
+          <Link to="/about">About</Link>
           <Link to="/">
             <button className="py-2 px-4 rounded-3xl bg-cyan-500 text-white">
               Login
@@ -86,7 +83,7 @@ const Navbar = () => {
         <Link to="/write" className="hover:text-cyan-500 duration-200">
           Write
         </Link>
-        <Link to="/" className="hover:text-cyan-500 duration-200">
+        <Link to="/about" className="hover:text-cyan-500 duration-200">
           About
         </Link>
 
@@ -145,26 +142,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-{
-  /* {currentUser ? (
-
-                    <Link to={`/profile/${currentUser.uid}`}>
-                        <IKImageWrapper
-                            src={currentUser.photoURL || "defaultprofile.png"}
-                            alt="profile"
-                            className="w-10 h-10 rounded-full object-cover"
-                        />
-                    </Link>
-                ) : (
-                    <Link to='/login'>
-                        <button className='py-2 px-4 rounded-3xl bg-cyan-500 text-white hover:bg-cyan-600 duration-200'>Login</button>
-                    </Link>
-                )} */
-}
-
-{
-  /* <Link to='/login'>
-                    <button className='py-2 px-4 rounded-3xl bg-cyan-500 text-white hover:bg-cyan-600 duration-200'>Login</button>
-                </Link> */
-}

@@ -21,6 +21,7 @@ import MainLayout from './layouts/MainLayout.jsx'
 import { AuthProvider } from './context/authContext/userAuthContext.jsx'
 import ProfilePage from './routes/ProfilePage.jsx'
 import { SearchProvider } from './context/SearchContext.jsx' 
+import About from './routes/About.jsx'
 
 const queryClient = new QueryClient()
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Homepage />,
+      },
+      {
+        path: "/about",
+        element: <About />,
       },
       {
         path: "/posts/:blog_id", // เพิ่มเข้ามาให้รองรับจากหน้า /posts
