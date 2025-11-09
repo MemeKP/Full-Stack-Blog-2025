@@ -3,11 +3,11 @@ import { Link } from "react-router-dom"
 import { PiHandsClappingDuotone } from "react-icons/pi";
 import { MdDelete } from "react-icons/md";
 import axios from "axios"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence } from "motion/react"
 import { useState } from "react";
 import { format } from "timeago.js"
 import { useAuth } from "../context/authContext/userAuthContext";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 const Comment = ({ comment, postId }) => {

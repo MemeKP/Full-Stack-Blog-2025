@@ -98,12 +98,3 @@ const PostList = () => {
 };
 
 export default PostList;
-
-// const { isPending, error, data } = useQuery({
-//   queryKey: ['repoData'],
-//   queryFn: () => fetchPosts(),
-// })
-{
-  /* <div className='flex flex-col gap-6  mb-8'>
-    </div> */
-}
